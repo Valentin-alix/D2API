@@ -1,0 +1,28 @@
+version: '3'
+services:
+  db:
+    hostname: postgres
+    env_file: ".env"
+    image: postgres:16-alpine
+    container_name: ezred2api-db
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./data/pgdata:/var/lib/postgresql/data/pgdata:rw
+    restart: always
+  api:
+    container_name: ezred2bot-backend
+    image: ezred2bot-backend-img
+    depends_on:
+      - db
+    build:
+      context: ../
+      dockerfile: ./backend/Dockerfile.prod
+    ports:
+      - 8000:8000
+    restart: always

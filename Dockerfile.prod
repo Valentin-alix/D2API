@@ -1,0 +1,24 @@
+FROM python:3.12.2-alpine
+
+RUN PYTHONDONTWRITEBYTECODE=1
+
+WORKDIR /app
+
+COPY ./pyproject.toml ./
+
+COPY ./backend/src ./backend/src
+COPY ./backend/.env ./backend/.env
+COPY ./backend/main.py ./backend/main.py
+
+COPY ./shared ./shared
+
+RUN pip install poetry==1.8.3
+
+# to avoid poetry path not found (even if we dont install tesserocr)
+COPY ./frontend/resources/tesseract/tesserocr-2.6.2-cp312-cp312-win_amd64.whl ./frontend/resources/tesseract/tesserocr-2.6.2-cp312-cp312-win_amd64.whl
+
+RUN poetry run poetry install --without frontend
+
+EXPOSE 8000
+
+ENTRYPOINT ["poetry", "run", "uvicorn", "--host", "0.0.0.0", "backend.main:app" ]
