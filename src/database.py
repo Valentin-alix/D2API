@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from src.const import ENV_PATH
 
-DB_PATH = f"postgresql://{get_key(ENV_PATH, "DB_USERNAME") or "postgres"}:{get_key(ENV_PATH, "DB_PASSWORD") or "postgres"}@{get_key(ENV_PATH, "DB_HOST") or "postgres"}:5432/{get_key(ENV_PATH, "DB_NAME") or "postgres"}"
+DB_PATH = f"postgresql://{get_key(ENV_PATH, "DB_USERNAME")}:{get_key(ENV_PATH, "DB_PASSWORD")}@{get_key(ENV_PATH, "DB_HOST")}:5432/{get_key(ENV_PATH, "DB_NAME")}"
 
 
 ALEMBIC_INI_PATH = os.path.join(Path(__file__).parent, "alembic", "alembic.ini")
