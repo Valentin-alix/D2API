@@ -7,8 +7,6 @@ docker compose -f docker-compose.prod.yml down
 
 docker rmi ezred2api
 
-docker system prune --force
-
 docker compose -f docker-compose.prod.yml build --no-cache --force-rm
 docker compose -f docker-compose.prod.yml up -d --force-recreate
 
