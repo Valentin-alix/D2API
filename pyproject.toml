@@ -19,6 +19,7 @@ alembic = "^1.13.1"
 psycopg2-binary = "^2.9.9"
 aiohttp = "^3.9.5"
 uvicorn = "^0.30.1"
+opencv-python = "^4.10.0.84"
 
 [tool.poetry.group.dev.dependencies]
 tqdm = "^4.66.4"
