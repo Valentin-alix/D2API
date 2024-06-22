@@ -10,8 +10,9 @@ from src.queries.template_found import (
     get_template_place_from_config,
     increment_parsed_count_template_map,
 )
+from src.security.auth import login
 
-router = APIRouter(prefix="/template")
+router = APIRouter(prefix="/template", dependencies=[Depends(login)])
 
 
 @router.get(

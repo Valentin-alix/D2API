@@ -10,8 +10,9 @@ from src.queries.recipe import (
     get_ordered_recipes,
     get_recipes_to_upgrade_jobs,
 )
+from src.security.auth import login
 
-router = APIRouter(prefix="/recipe")
+router = APIRouter(prefix="/recipe", dependencies=[Depends(login)])
 
 
 @router.get("/craft_default", response_model=list[RecipeSchema])

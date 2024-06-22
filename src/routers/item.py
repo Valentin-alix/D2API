@@ -9,8 +9,9 @@ from src.models.items.item import Item
 from src.queries.recipe import (
     get_merged_ordered_with_recipe_items,
 )
+from src.security.auth import login
 
-router = APIRouter(prefix="/item")
+router = APIRouter(prefix="/item", dependencies=[Depends(login)])
 
 
 @router.get("/{item_id}/image/", response_class=Response)

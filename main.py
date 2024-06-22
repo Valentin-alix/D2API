@@ -9,7 +9,6 @@ from starlette.middleware.cors import CORSMiddleware
 
 from src.database import run_migrations
 from src.routers import (
-    auth,
     user,
     breed,
     character,
@@ -27,8 +26,6 @@ from src.routers import (
     world
 )
 
-# security = HTTPBasic()
-
 app = FastAPI()
 
 app.add_middleware(
@@ -38,7 +35,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(character.router)
 app.include_router(breed.router)

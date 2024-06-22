@@ -1,4 +1,3 @@
-from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
@@ -8,28 +7,26 @@ from EzreD2Shared.shared.schemas.character import (
 )
 from EzreD2Shared.shared.schemas.collectable import CollectableSchema
 from EzreD2Shared.shared.schemas.item import ItemSchema
-from EzreD2Shared.shared.schemas.user import ReadUserSchema
 from EzreD2Shared.shared.schemas.waypoint import WaypointSchema
 from src.database import session_local
 from src.models.config.character import Character, CharacterJobInfo
 from src.models.items.item import Item
 from src.models.navigations.waypoint import Waypoint
-from src.queries.auth import get_current_sub_user
 from src.queries.character import (
     get_max_pods_character,
     get_possible_collectable,
     populate_job_info,
 )
 from src.queries.utils import get_or_create
+from src.security.auth import login
 
-router = APIRouter(prefix="/character")
+router = APIRouter(prefix="/character", dependencies=[Depends(login)])
 
 
 @router.put("/{character_id}", response_model=CharacterSchema)
 def update_character(
     character_id: str,
     character_update: CharacterSchema,
-    current_user: Annotated[ReadUserSchema, Depends(get_current_sub_user)],
     session: Session = Depends(session_local),
 ):
     character = session.get(Character, character_id)
@@ -45,7 +42,6 @@ def update_job_info(
     character_id: str,
     job_id: int,
     lvl: int,
-    current_user: Annotated[ReadUserSchema, Depends(get_current_sub_user)],
     session: Session = Depends(session_local),
 ):
     job_info = (
@@ -64,7 +60,6 @@ def update_job_info(
 @router.get("/{character_id}/job_info", response_model=list[CharacterJobInfoSchema])
 def get_job_infos(
     character_id: str,
-    current_user: Annotated[ReadUserSchema, Depends(get_current_sub_user)],
     session: Session = Depends(session_local),
 ):
     job_infos = (
@@ -80,7 +75,6 @@ def get_job_infos(
 @router.get("/{character_id}/max_pods", response_model=int)
 def get_max_pods(
     character_id: str,
-    current_user: Annotated[ReadUserSchema, Depends(get_current_sub_user)],
     session: Session = Depends(session_local),
 ):
     return get_max_pods_character(session, character_id)
@@ -90,7 +84,6 @@ def get_max_pods(
 def add_waypoint(
     character_id: str,
     waypoint_id: int,
-    current_user: Annotated[ReadUserSchema, Depends(get_current_sub_user)],
     session: Session = Depends(session_local),
 ):
     character = session.get_one(Character, character_id)
@@ -103,7 +96,6 @@ def add_waypoint(
 def add_bank_items(
     character_id: str,
     item_ids: list[int],
-    current_user: Annotated[ReadUserSchema, Depends(get_current_sub_user)],
     session: Session = Depends(session_local),
 ):
     character = session.get_one(Character, character_id)
@@ -116,7 +108,6 @@ def add_bank_items(
 def remove_bank_items(
     character_id: str,
     item_ids: list[int],
-    current_user: Annotated[ReadUserSchema, Depends(get_current_sub_user)],
     session: Session = Depends(session_local),
 ):
     character = session.get_one(Character, character_id)
@@ -129,7 +120,6 @@ def remove_bank_items(
 @router.get("/{character_id}/waypoints", response_model=list[WaypointSchema])
 def get_waypoints(
     character_id: str,
-    current_user: Annotated[ReadUserSchema, Depends(get_current_sub_user)],
     session: Session = Depends(session_local),
 ):
     character = session.get_one(Character, character_id)
@@ -139,7 +129,6 @@ def get_waypoints(
 @router.get("/{character_id}/bank_items", response_model=list[ItemSchema])
 def get_bank_items(
     character_id: str,
-    current_user: Annotated[ReadUserSchema, Depends(get_current_sub_user)],
     session: Session = Depends(session_local),
 ):
     character = session.get_one(Character, character_id)
@@ -151,7 +140,6 @@ def get_bank_items(
 )
 def get_char_possible_collectable(
     character_id: str,
-    current_user: Annotated[ReadUserSchema, Depends(get_current_sub_user)],
     session: Session = Depends(session_local),
 ):
     character = session.get_one(Character, character_id)
@@ -161,7 +149,6 @@ def get_char_possible_collectable(
 @router.get("/{character_id}/or_create/", response_model=CharacterSchema)
 def get_or_create_character(
     character_id: str,
-    current_user: Annotated[ReadUserSchema, Depends(get_current_sub_user)],
     session: Session = Depends(session_local),
 ):
     character, is_created = get_or_create(

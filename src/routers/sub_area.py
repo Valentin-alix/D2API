@@ -17,8 +17,9 @@ from src.queries.sub_area import (
     get_weights_fight_map,
     get_weights_harvest_map,
 )
+from src.security.auth import login
 
-router = APIRouter(prefix="/sub_area")
+router = APIRouter(prefix="/sub_area", dependencies=[Depends(login)])
 
 
 @router.get("/random_grouped_sub_area/", response_model=list[SubAreaSchema])

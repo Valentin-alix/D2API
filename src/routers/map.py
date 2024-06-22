@@ -16,8 +16,9 @@ from src.queries.map import (
     get_neighbors,
     get_related_map,
 )
+from src.security.auth import login
 
-router = APIRouter(prefix="/map")
+router = APIRouter(prefix="/map", dependencies=[Depends(login)])
 
 
 @router.get("/{map_id}", response_model=MapSchema)

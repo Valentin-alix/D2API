@@ -13,8 +13,9 @@ from src.queries.spell import (
     get_spell_lvl_for_boost,
     is_boost_for_characteristic,
 )
+from src.security.auth import login
 
-router = APIRouter(prefix="/spell")
+router = APIRouter(prefix="/spell", dependencies=[Depends(login)])
 
 
 @router.get("/spell_lvl/", response_model=list[SpellLevelSchema])
