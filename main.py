@@ -1,4 +1,3 @@
-import logging
 import os
 from pathlib import Path
 from time import sleep
@@ -10,6 +9,8 @@ from starlette.middleware.cors import CORSMiddleware
 
 from src.database import run_migrations
 from src.routers import (
+    auth,
+    user,
     breed,
     character,
     collectable,
@@ -23,13 +24,13 @@ from src.routers import (
     sub_area,
     template,
     type_item,
-    world,
+    world
 )
 
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format="%(message)s")
+# security = HTTPBasic()
 
 app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -37,6 +38,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(auth.router)
+app.include_router(user.router)
 app.include_router(character.router)
 app.include_router(breed.router)
 app.include_router(collectable.router)
