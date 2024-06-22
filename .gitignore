@@ -2,6 +2,7 @@
 data
 poetry.lock
 *.sql
+pgdata
 #official python gitignore
 # Byte-compiled / optimized / DLL files
 __pycache__/
