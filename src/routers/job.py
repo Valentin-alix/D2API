@@ -4,8 +4,9 @@ from sqlalchemy.orm import Session
 from EzreD2Shared.shared.schemas.job import JobSchema
 from src.database import session_local
 from src.queries.job import find_job_by_text
+from src.security.auth import login
 
-router = APIRouter(prefix="/job")
+router = APIRouter(prefix="/job", dependencies=[Depends(login)])
 
 
 @router.get("/by_text/", response_model=JobSchema | None)

@@ -18,8 +18,9 @@ from src.queries.character import (
     populate_job_info,
 )
 from src.queries.utils import get_or_create
+from src.security.auth import login
 
-router = APIRouter(prefix="/character")
+router = APIRouter(prefix="/character", dependencies=[Depends(login)])
 
 
 @router.put("/{character_id}", response_model=CharacterSchema)

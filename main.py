@@ -1,7 +1,5 @@
-import logging
 import os
 from pathlib import Path
-from time import sleep
 
 import uvicorn
 from fastapi import FastAPI
@@ -10,6 +8,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from src.database import run_migrations
 from src.routers import (
+    user,
     breed,
     character,
     collectable,
@@ -23,13 +22,11 @@ from src.routers import (
     sub_area,
     template,
     type_item,
-    world,
+    world
 )
 
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format="%(message)s")
-
 app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -37,6 +34,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(user.router)
 app.include_router(character.router)
 app.include_router(breed.router)
 app.include_router(collectable.router)
@@ -57,6 +55,5 @@ if __name__ == "__main__":
     os.system(
         f"docker-compose -f {os.path.join(Path(__file__).parent, "docker-compose.dev.yml")} up -d"
     )
-    sleep(3)
     run_migrations()
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

@@ -24,3 +24,4 @@ from .stats.characteristic import *
 from .stats.spell import *
 from .stats.breed import *
 from .stats.effect import *
+from .user import *
