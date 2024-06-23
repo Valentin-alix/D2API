@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from time import sleep
 
 import uvicorn
 from fastapi import FastAPI
@@ -56,6 +55,5 @@ if __name__ == "__main__":
     os.system(
         f"docker-compose -f {os.path.join(Path(__file__).parent, "docker-compose.dev.yml")} up -d"
     )
-    sleep(3)
     run_migrations()
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
