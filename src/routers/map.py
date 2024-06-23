@@ -39,7 +39,7 @@ def related_map(
     return get_related_map(session, x=x, y=y, world_id=world_id)
 
 
-@router.get("/find_path/", response_model=list[MapWithActionSchema])
+@router.get("/find_path/", response_model=list[MapWithActionSchema] | None)
 def find_path(
     is_sub: bool,
     use_transport: bool,
