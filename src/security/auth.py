@@ -17,11 +17,11 @@ def login(
 ):
     user = session.query(User).filter(User.email == credentials.username).first()
     if user is None:
-        raise HTTPException(status_code=400, detail="Incorrect username")
+        raise HTTPException(status_code=401, detail="Incorrect username")
     if not credentials.password == user.password:
-        raise HTTPException(status_code=400, detail="Incorrect password")
+        raise HTTPException(status_code=401, detail="Incorrect password")
 
     if user.sub_expire < datetime.now():
-        raise HTTPException(status_code=400, detail="User is not sub anymore")
+        raise HTTPException(status_code=401, detail="User is not sub anymore")
 
     return user
