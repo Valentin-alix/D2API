@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 from time import sleep
 
@@ -27,6 +28,11 @@ from src.routers import (
 )
 
 app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    run_migrations()
+    yield
 
 app.add_middleware(
     CORSMiddleware,
@@ -57,5 +63,4 @@ if __name__ == "__main__":
         f"docker-compose -f {os.path.join(Path(__file__).parent, "docker-compose.dev.yml")} up -d"
     )
     sleep(3)
-    run_migrations()
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

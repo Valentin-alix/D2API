@@ -9,9 +9,9 @@
 - DB_NAME=ezred2db
 - DB_HOST=localhost
 
-### Generate init sql & restore
+### Generate init sql & dump datas
 
 ```
 docker exec -i ezred2db pg_dump -U postgres --data-only -d ezred2db > dump.sql
-cat init.sql | docker exec -i ezred2api-db psql -U postgres -d ezred2db
+bash scripts/populate.sh
 ```
