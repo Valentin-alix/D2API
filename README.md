@@ -12,6 +12,6 @@
 ### Generate init sql & dump datas
 
 ```
-docker exec -i ezred2db pg_dump -U postgres --data-only -d ezred2db > dump.sql
+bash scripts/dump.sh
 bash scripts/populate.sh
 ```
