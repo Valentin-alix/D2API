@@ -27,12 +27,14 @@ from src.routers import (
     world
 )
 
-app = FastAPI()
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     run_migrations()
     yield
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
