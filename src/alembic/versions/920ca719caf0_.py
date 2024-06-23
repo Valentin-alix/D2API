@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: c7cfdbd5e4ff
+Revision ID: 920ca719caf0
 Revises: 
-Create Date: 2024-06-19 11:51:49.173353
+Create Date: 2024-06-23 17:00:36.975108
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'c7cfdbd5e4ff'
+revision: str = '920ca719caf0'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -99,6 +99,14 @@ def upgrade() -> None:
     sa.Column('category', sa.Enum('ALL', 'EQUIPMENT', 'CONSUMABLES', 'RESOURCES', 'QUEST', 'OTHER', 'COSMETICS', 'ECAFLIP_CARD', name='categoryenum'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
+    )
+    op.create_table('user',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('email', sa.String(), nullable=False),
+    sa.Column('password', sa.String(), nullable=False),
+    sa.Column('sub_expire', sa.DateTime(), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('email')
     )
     op.create_table('world',
     sa.Column('id', sa.Integer(), autoincrement=False, nullable=False),
@@ -400,6 +408,7 @@ def downgrade() -> None:
     op.drop_table('characteristic')
     op.drop_table('character')
     op.drop_table('world')
+    op.drop_table('user')
     op.drop_table('type_item')
     op.drop_table('template_found')
     op.drop_table('stat')
