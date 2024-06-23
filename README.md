@@ -6,12 +6,12 @@
 
 - DB_USERNAME=postgres
 - DB_PASSWORD=postgres
-- DB_NAME=ezred2db
+- DB_NAME=postgres
 - DB_HOST=localhost
 
 ### Generate init sql & restore
 
 ```
-docker exec -i ezred2db pg_dump -U postgres --data-only -d ezred2db > dump.sql
-cat init.sql | docker exec -i ezred2api-db psql -U postgres -d ezred2db
+docker exec -i ezred2db pg_dump -U postgres --data-only -d postgres > dump.sql
+cat init.sql | docker exec -i postgres psql -U postgres -d postgres
 ```
