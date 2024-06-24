@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
     run_migrations()
     yield
 
-app = FastAPI(lifespan=lifespan, root_path="/ezred2api")
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
