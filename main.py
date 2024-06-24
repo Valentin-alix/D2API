@@ -1,6 +1,7 @@
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
+import socket
 from time import sleep
 
 import uvicorn
@@ -34,7 +35,7 @@ async def lifespan(app: FastAPI):
     run_migrations()
     yield
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, root_path="/ezred2api")
 
 app.add_middleware(
     CORSMiddleware,
@@ -60,9 +61,18 @@ app.include_router(world.router)
 app.include_router(template.router)
 
 
+def is_db_ready(host:str, port:int)->bool:
+    """Vérifie si la base de données est prête pour les connexions."""
+    try:
+        with socket.create_connection((host, port), timeout=1):
+            return True
+    except OSError:
+        return False
+
 if __name__ == "__main__":
     os.system(
         f"docker-compose -f {os.path.join(Path(__file__).parent, "docker-compose.dev.yml")} up -d"
     )
-    sleep(3)
+    while not is_db_ready("localhost", 5432):
+        sleep(1)
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

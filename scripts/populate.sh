@@ -8,3 +8,5 @@ source .env
 set +o allexport
 
 cat scripts/init.sql | docker exec -i ezred2db psql -U $DB_USERNAME -d $DB_NAME
+
+python scripts/populate/create_initial_user.py

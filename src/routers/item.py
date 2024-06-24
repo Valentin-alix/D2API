@@ -26,7 +26,7 @@ def get_icon_img(
         .first()
     )
     if img is None:
-        return None
+        return Response()
 
     return Response(content=img[0])
 
