@@ -1,8 +1,5 @@
-from pathlib import Path
-import sys
 from dotenv import get_key
 
-sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from src.const import ENV_PATH
 from src.database import SessionMaker
@@ -16,7 +13,3 @@ def create_initial_user():
     if session.query(User).filter(User.email == username).one_or_none() is None:
         session.add(User(email=username, password=password))
         session.commit()
-
-
-if __name__ == "__main__":
-    create_initial_user()

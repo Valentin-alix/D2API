@@ -10,6 +10,7 @@ COPY ./src ./src
 COPY ./.env ./.env
 COPY ./main.py ./main.py
 COPY ./EzreD2Shared ./EzreD2Shared
+COPY ./scripts/populate/create_initial_user.py ./scripts/populate/create_initial_user.py
 
 RUN pip install poetry==1.8.3
 
