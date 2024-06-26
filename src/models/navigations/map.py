@@ -44,6 +44,9 @@ class Map(Base):
         nullable=False, default=False
     )
 
+    def __eq__(self, value: object) -> bool:
+        return isinstance(value, Map) and value.id == self.id
+
     def __hash__(self) -> int:
         return self.id.__hash__()
 

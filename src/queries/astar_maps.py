@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session, joinedload
 from EzreD2Shared.shared.directions import get_inverted_direction
 from EzreD2Shared.shared.enums import FromDirection
 from EzreD2Shared.shared.utils.algos.astar import Astar
-from EzreD2Shared.shared.utils.randomizer import multiply_offset
 from src.entities.map_with_action import MapWithAction
 from src.models.navigations.map import Map
+from src.models.navigations.map_direction import MapDirection
 from src.models.navigations.waypoint import Waypoint
 from src.queries.map import get_neighbors
 from src.queries.zaapi import get_zaapis_by_zone
@@ -20,9 +20,8 @@ def is_goal_reached_path_map(
 def get_dist_map_to_end_maps(
     map_with_action: MapWithAction, end_maps_with_action: set[MapWithAction]
 ) -> float:
-    return (
-        min(map_with_action.map.get_dist_map(elem.map) for elem in end_maps_with_action)
-        * multiply_offset()
+    return min(
+        map_with_action.map.get_dist_map(elem.map) for elem in end_maps_with_action
     )
 
 
@@ -34,17 +33,7 @@ def get_neighbors_map_change(
     checked_world_id_waypoints: set[int],
     session: Session,
 ):
-    neighbors_maps_with_action: list[MapWithAction] = [
-        MapWithAction(
-            map=map_direction.to_map,
-            current_direction=get_inverted_direction(map_direction.to_direction),
-            from_action=map_direction,
-        )
-        for map_direction in get_neighbors(
-            session, map_with_action.map.id, map_with_action.current_direction
-        )
-    ]
-
+    neighbors_maps_with_action: list[MapWithAction] = []
     if is_sub and use_transport:
         if (
             map_with_action.map.world_id not in checked_world_id_waypoints
@@ -69,17 +58,28 @@ def get_neighbors_map_change(
                 )
             checked_world_id_waypoints.add(map_with_action.map.world_id)
 
-        for zappis in get_zaapis_by_zone(session).values():
-            if not any(elem.id == map_with_action.map.id for elem in zappis.keys()):
+        for zaapis in get_zaapis_by_zone(session).values():
+            if not any(elem.id == map_with_action.map.id for elem in zaapis.keys()):
                 continue
-            for map, zaapi in zappis.items():
+            for zaapi_map, zaapi in zaapis.items():
                 neighbors_maps_with_action.append(
                     MapWithAction(
-                        map=map,
+                        map=zaapi_map,
                         current_direction=FromDirection.ZAAPI,
                         from_action=zaapi,
                     )
                 )
+
+    for map_direction in get_neighbors(
+        session, map_with_action.map.id, map_with_action.current_direction
+    ):
+        neighbors_maps_with_action.append(
+            MapWithAction(
+                map=map_direction.to_map,
+                current_direction=get_inverted_direction(map_direction.to_direction),
+                from_action=map_direction,
+            )
+        )
 
     return neighbors_maps_with_action
 
@@ -118,6 +118,13 @@ class AstarMap(Astar):
         return is_goal_reached_path_map(current, ends)
 
     def get_dist(self, current: MapWithAction, ends: set[MapWithAction]) -> float:
+        if all(
+            end.from_action is not None
+            and not isinstance(end.from_action, MapDirection)
+            for end in ends
+        ):
+            # it is taking zaap or zaapi
+            return 1.5
         return get_dist_map_to_end_maps(current, ends)
 
     def get_neighbors(self, data: MapWithAction) -> list[MapWithAction]:
