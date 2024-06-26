@@ -50,8 +50,12 @@ def find_path(
     target_map_ids: list[int],
     session: Session = Depends(session_local),
 ):
-    with session.begin():
-        astar_map = AstarMap(is_sub, use_transport, available_waypoints_ids, session)
+    MAX_RETRIES = 3
+
+    astar_map = AstarMap(is_sub, use_transport, available_waypoints_ids, session)
+
+    for attempt in range(MAX_RETRIES):
+
         path_map = astar_map.find_path(
             session.get_one(Map, map_id),
             from_direction,
@@ -60,7 +64,8 @@ def find_path(
         try:
             return path_map
         except ResponseValidationError as err:
-            raise HTTPException(status_code=422, detail=err.errors())
+            if attempt == MAX_RETRIES - 1:
+                raise HTTPException(status_code=422, detail=err.errors())
 
 
 @router.get("/from_coordinate/", response_model=MapSchema)
