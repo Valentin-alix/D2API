@@ -1,3 +1,4 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.exceptions import ResponseValidationError
 from sqlalchemy.orm import Session
@@ -20,6 +21,8 @@ from src.queries.map import (
 from src.security.auth import login
 
 router = APIRouter(prefix="/map", dependencies=[Depends(login)])
+
+logger = logging.getLogger()
 
 
 @router.get("/{map_id}", response_model=MapSchema)
@@ -61,9 +64,15 @@ def find_path(
             from_direction,
             session.query(Map).filter(Map.id.in_(target_map_ids)).all(),
         )
+        if path_map is None:
+            logger.error(
+                f"Did not found path from {map_id} | {from_direction} to {target_map_ids} with waypoints {available_waypoints_ids}"
+            )
         try:
+            logger.info(path_map)
             return path_map
         except ResponseValidationError as err:
+            logger.error(err.errors())
             if attempt == MAX_RETRIES - 1:
                 raise HTTPException(status_code=422, detail=err.errors())
 

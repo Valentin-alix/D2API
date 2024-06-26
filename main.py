@@ -1,7 +1,9 @@
+import logging
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 import socket
+import sys
 from time import sleep
 
 import uvicorn
@@ -38,6 +40,13 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+stream_handler = logging.StreamHandler(sys.stdout)
+logger.addHandler(stream_handler)
+
+logger.info("API is starting.")
 
 app.add_middleware(
     CORSMiddleware,
