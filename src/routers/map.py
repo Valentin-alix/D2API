@@ -1,4 +1,3 @@
-import traceback
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.exceptions import ResponseValidationError
 from sqlalchemy.orm import Session
@@ -51,18 +50,17 @@ def find_path(
     target_map_ids: list[int],
     session: Session = Depends(session_local),
 ):
-    astar_map = AstarMap(is_sub, use_transport, available_waypoints_ids, session)
-    path_map = astar_map.find_path(
-        session.get_one(Map, map_id),
-        from_direction,
-        session.query(Map).filter(Map.id.in_(target_map_ids)).all(),
-    )
-    try:
-        return path_map
-    except ResponseValidationError as err:
-        print(traceback.format_exc())
-        print(path_map)
-        raise HTTPException(status_code=422, detail=err.errors())
+    with session.begin():
+        astar_map = AstarMap(is_sub, use_transport, available_waypoints_ids, session)
+        path_map = astar_map.find_path(
+            session.get_one(Map, map_id),
+            from_direction,
+            session.query(Map).filter(Map.id.in_(target_map_ids)).all(),
+        )
+        try:
+            return path_map
+        except ResponseValidationError as err:
+            raise HTTPException(status_code=422, detail=err.errors())
 
 
 @router.get("/from_coordinate/", response_model=MapSchema)
