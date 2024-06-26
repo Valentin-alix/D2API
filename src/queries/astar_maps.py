@@ -1,5 +1,3 @@
-from typing import Iterator
-
 from sqlalchemy.orm import Session, joinedload
 
 from EzreD2Shared.shared.directions import get_inverted_direction
@@ -36,18 +34,16 @@ def get_neighbors_map_change(
     checked_world_id_waypoints: set[int],
     session: Session,
 ):
-    neighbors_maps_with_action: set[MapWithAction] = set(
-        (
-            MapWithAction(
-                map=map_direction.to_map,
-                current_direction=get_inverted_direction(map_direction.to_direction),
-                from_action=map_direction,
-            )
+    neighbors_maps_with_action: list[MapWithAction] = [
+        MapWithAction(
+            map=map_direction.to_map,
+            current_direction=get_inverted_direction(map_direction.to_direction),
+            from_action=map_direction,
         )
         for map_direction in get_neighbors(
             session, map_with_action.map.id, map_with_action.current_direction
         )
-    )
+    ]
 
     if is_sub and use_transport:
         if (
@@ -64,7 +60,7 @@ def get_neighbors_map_change(
                 .options(joinedload(Waypoint.map))
             )
             for waypoint in waypoints:
-                neighbors_maps_with_action.add(
+                neighbors_maps_with_action.append(
                     MapWithAction(
                         map=waypoint.map,
                         current_direction=FromDirection.WAYPOINT,
@@ -76,9 +72,8 @@ def get_neighbors_map_change(
         for zappis in get_zaapis_by_zone(session).values():
             if not any(elem.id == map_with_action.map.id for elem in zappis.keys()):
                 continue
-
             for map, zaapi in zappis.items():
-                neighbors_maps_with_action.add(
+                neighbors_maps_with_action.append(
                     MapWithAction(
                         map=map,
                         current_direction=FromDirection.ZAAPI,
@@ -86,7 +81,7 @@ def get_neighbors_map_change(
                     )
                 )
 
-    return iter(neighbors_maps_with_action)
+    return neighbors_maps_with_action
 
 
 class AstarMap(Astar):
@@ -109,7 +104,7 @@ class AstarMap(Astar):
         start_map: Map,
         current_direction: FromDirection,
         end_maps: list[Map],
-    ) -> Iterator[MapWithAction] | None:
+    ) -> list[MapWithAction] | None:
         start = MapWithAction(map=start_map, current_direction=current_direction)
         ends = set(
             (
@@ -125,7 +120,7 @@ class AstarMap(Astar):
     def get_dist(self, current: MapWithAction, ends: set[MapWithAction]) -> float:
         return get_dist_map_to_end_maps(current, ends)
 
-    def get_neighbors(self, data: MapWithAction) -> Iterator[MapWithAction]:
+    def get_neighbors(self, data: MapWithAction) -> list[MapWithAction]:
         return get_neighbors_map_change(
             data,
             self.is_sub,

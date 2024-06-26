@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends
+import traceback
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.exceptions import ResponseValidationError
 from sqlalchemy.orm import Session
 
 from EzreD2Shared.shared.enums import FromDirection
@@ -50,15 +52,17 @@ def find_path(
     session: Session = Depends(session_local),
 ):
     astar_map = AstarMap(is_sub, use_transport, available_waypoints_ids, session)
-    iter_path_map = astar_map.find_path(
+    path_map = astar_map.find_path(
         session.get_one(Map, map_id),
         from_direction,
         session.query(Map).filter(Map.id.in_(target_map_ids)).all(),
     )
-    if iter_path_map is None:
-        return None
-    path_map = list(iter_path_map)
-    return path_map
+    try:
+        return path_map
+    except ResponseValidationError as err:
+        print(traceback.format_exc())
+        print(path_map)
+        raise HTTPException(status_code=422, detail=err.errors())
 
 
 @router.get("/from_coordinate/", response_model=MapSchema)
