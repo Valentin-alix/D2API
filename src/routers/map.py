@@ -50,14 +50,14 @@ def find_path(
     session: Session = Depends(session_local),
 ):
     astar_map = AstarMap(is_sub, use_transport, available_waypoints_ids, session)
-    path_map = astar_map.find_path(
+    iter_path_map = astar_map.find_path(
         session.get_one(Map, map_id),
         from_direction,
         session.query(Map).filter(Map.id.in_(target_map_ids)).all(),
     )
-    if path_map is None:
+    if iter_path_map is None:
         return None
-    path_map = list(path_map)
+    path_map = list(iter_path_map)
     return path_map
 
 

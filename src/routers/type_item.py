@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from sqlalchemy import ColumnElement
 from sqlalchemy.orm import Session
 
 from EzreD2Shared.shared.enums import CategoryEnum
@@ -15,9 +16,9 @@ def get_type_items(
     category: CategoryEnum | None = None,
     session: Session = Depends(session_local),
 ):
+    extra_filters: tuple[ColumnElement[bool]] | tuple = ()
     if category is not None:
         extra_filters = (TypeItem.category == category,)
-    else:
-        extra_filters = ()
+
     type_items = session.query(TypeItem).filter(*extra_filters).all()
     return type_items
