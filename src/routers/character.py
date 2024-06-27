@@ -113,7 +113,8 @@ def remove_bank_items(
     character = session.get_one(Character, character_id)
     items = session.query(Item).filter(Item.id.in_(item_ids)).all()
     for item in items:
-        character.bank_items.remove(item)
+        if item in character.bank_items:
+            character.bank_items.remove(item)
     session.commit()
 
 
