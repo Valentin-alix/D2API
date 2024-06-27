@@ -1,5 +1,5 @@
 import logging
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from fastapi.exceptions import ResponseValidationError
 from sqlalchemy.orm import Session
 
@@ -53,28 +53,21 @@ def find_path(
     target_map_ids: list[int],
     session: Session = Depends(session_local),
 ):
-    MAX_RETRIES = 3
-
     astar_map = AstarMap(is_sub, use_transport, available_waypoints_ids, session)
-
-    for attempt in range(MAX_RETRIES):
-
-        path_map = astar_map.find_path(
-            session.get_one(Map, map_id),
-            from_direction,
-            session.query(Map).filter(Map.id.in_(target_map_ids)).all(),
+    path_map = astar_map.find_path(
+        session.get_one(Map, map_id),
+        from_direction,
+        session.query(Map).filter(Map.id.in_(target_map_ids)).all(),
+    )
+    if path_map is None:
+        logger.error(
+            f"Did not found path from {map_id} | {from_direction} to {target_map_ids} with waypoints {available_waypoints_ids}"
         )
-        if path_map is None:
-            logger.error(
-                f"Did not found path from {map_id} | {from_direction} to {target_map_ids} with waypoints {available_waypoints_ids}"
-            )
-        try:
-            logger.info(path_map)
-            return path_map
-        except ResponseValidationError as err:
-            logger.error(err.errors())
-            if attempt == MAX_RETRIES - 1:
-                raise HTTPException(status_code=422, detail=err.errors())
+    try:
+        return path_map
+    except ResponseValidationError as err:
+        logger.error(err.errors())
+        raise err
 
 
 @router.get("/from_coordinate/", response_model=MapSchema)

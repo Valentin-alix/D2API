@@ -7,7 +7,6 @@ from src.entities.map_with_action import MapWithAction
 from src.models.navigations.map import Map
 from src.models.navigations.map_direction import MapDirection
 from src.models.navigations.waypoint import Waypoint
-from src.queries.map import get_neighbors
 from src.queries.zaapi import get_zaapis_by_zone
 
 
@@ -32,7 +31,8 @@ def get_neighbors_map_change(
     available_waypoints_ids: list[int],
     checked_world_id_waypoints: set[int],
     session: Session,
-):
+) -> list[MapWithAction]:
+
     neighbors_maps_with_action: list[MapWithAction] = []
     if is_sub and use_transport:
         if (
@@ -51,6 +51,7 @@ def get_neighbors_map_change(
             for waypoint in waypoints:
                 neighbors_maps_with_action.append(
                     MapWithAction(
+                        map_id=waypoint.map_id,
                         map=waypoint.map,
                         current_direction=FromDirection.WAYPOINT,
                         from_action=waypoint,
@@ -64,17 +65,21 @@ def get_neighbors_map_change(
             for zaapi_map, zaapi in zaapis.items():
                 neighbors_maps_with_action.append(
                     MapWithAction(
+                        map_id=zaapi_map.id,
                         map=zaapi_map,
                         current_direction=FromDirection.ZAAPI,
                         from_action=zaapi,
                     )
                 )
-
-    for map_direction in get_neighbors(
-        session, map_with_action.map.id, map_with_action.current_direction
-    ):
+    possible_map_directions = [
+        map_direction
+        for map_direction in map_with_action.map.map_directions
+        if map_direction.from_direction == map_with_action.current_direction
+    ]
+    for map_direction in possible_map_directions:
         neighbors_maps_with_action.append(
             MapWithAction(
+                map_id=map_direction.to_map_id,
                 map=map_direction.to_map,
                 current_direction=get_inverted_direction(map_direction.to_direction),
                 from_action=map_direction,
@@ -105,10 +110,14 @@ class AstarMap(Astar):
         current_direction: FromDirection,
         end_maps: list[Map],
     ) -> list[MapWithAction] | None:
-        start = MapWithAction(map=start_map, current_direction=current_direction)
+        start = MapWithAction(
+            map_id=start_map.id, map=start_map, current_direction=current_direction
+        )
         ends = set(
             (
-                MapWithAction(map=map, current_direction=current_direction)
+                MapWithAction(
+                    map_id=map.id, map=map, current_direction=current_direction
+                )
                 for map in end_maps
             )
         )
