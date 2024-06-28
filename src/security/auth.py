@@ -25,3 +25,12 @@ def login(
         raise HTTPException(status_code=401, detail="User is not sub anymore")
 
     return user
+
+
+def login_for_admin(
+    credentials: Annotated[HTTPBasicCredentials, Depends(security)],
+    session: Session = Depends(session_local),
+):
+    user = login(credentials, session)
+    if not user.is_admin:
+        raise HTTPException(status_code=403, detail="User is not admin.")

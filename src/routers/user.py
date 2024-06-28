@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from EzreD2Shared.shared.schemas.user import CreateUserSchema, ReadUserSchema
 from src.models.user import User
 from dateutil.relativedelta import relativedelta
-from src.security.auth import login
+from src.security.auth import login, login_for_admin
 
 router = APIRouter(prefix="/users")
 
@@ -17,7 +17,9 @@ def get_user_me(user: Annotated[HTTPBasicCredentials, Depends(login)]):
 
 
 @router.post("/", response_model=ReadUserSchema)
-def create_user(user_datas: CreateUserSchema, session: Session = Depends(login)):
+def create_user(
+    user_datas: CreateUserSchema, session: Session = Depends(login_for_admin)
+):
     user = User(
         **user_datas.model_dump(),
         sub_expire=datetime.datetime.now() + relativedelta(years=1)

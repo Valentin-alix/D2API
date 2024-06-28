@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 
-from scripts.populate.create_initial_user import create_initial_user
+from scripts.populate.create_initial_user import create_initial_users
 from src.database import run_migrations
 from src.routers import (
     user,
@@ -36,7 +36,7 @@ from src.routers import (
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     run_migrations()
-    create_initial_user()
+    create_initial_users()
     yield
 
 app = FastAPI(lifespan=lifespan)
