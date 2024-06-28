@@ -17,9 +17,9 @@ def get_user_me(user: Annotated[HTTPBasicCredentials, Depends(login)]):
 
 
 @router.post("/", response_model=ReadUserSchema)
-def create_user(user: CreateUserSchema, session: Session = Depends(login)):
+def create_user(user_datas: CreateUserSchema, session: Session = Depends(login)):
     user = User(
-        **user.model_dump(),
+        **user_datas.model_dump(),
         sub_expire=datetime.datetime.now() + relativedelta(years=1)
     )
     session.add(user)
