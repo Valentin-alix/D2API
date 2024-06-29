@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from EzreD2Shared.shared.consts.jobs import HARVEST_JOBS_ID
 from EzreD2Shared.shared.enums import CategoryEnum
 from EzreD2Shared.shared.schemas.recipe import RecipeSchema
 from src.database import session_local
 from src.models.config.character import Character
 from src.queries.recipe import (
     get_best_recipe_for_benefits,
-    get_ordered_recipes,
+    get_valid_ordered_recipes,
     get_recipes_to_upgrade_jobs,
 )
 from src.security.auth import login
@@ -21,8 +22,11 @@ def get_default_recipes(
     session: Session = Depends(session_local),
 ):
     character = session.get_one(Character, character_id)
+    bank_item_ids: list[int] = [elem.id for elem in character.bank_items]
     craft_items = list(get_recipes_to_upgrade_jobs(session, character))
-    ordered_recipes = get_ordered_recipes(craft_items)
+    ordered_recipes = get_valid_ordered_recipes(
+        bank_item_ids, craft_items, HARVEST_JOBS_ID
+    )
     return ordered_recipes
 
 

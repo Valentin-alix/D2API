@@ -11,18 +11,28 @@ from src.models.price import Price
 from src.models.recipe import Recipe
 
 
-@timeit
-def get_ordered_recipes(recipes: list[Recipe]):
+def get_valid_ordered_recipes(
+    bank_item_ids: list[int], recipes: list[Recipe], valid_job_ids: list[int]
+) -> list[Recipe]:
     recipes.sort(key=lambda recipe: recipe.result_item.level, reverse=True)
     ordered_recipes: list[Recipe] = []
     for recipe in recipes:
-        for ingredient in recipe.ingredients:
-            if ingredient.item.recipe not in recipes:
+        if recipe.job_id not in valid_job_ids:
+            continue
+        for ingredient in sorted(
+            recipe.ingredients, key=lambda elem: elem.item.level, reverse=True
+        ):
+            if ingredient.item.id not in bank_item_ids:
+                break
+            if ingredient.item.recipe is None:
                 continue
-            if ingredient.item.recipe not in ordered_recipes:
-                ordered_recipes.append(ingredient.item.recipe)
-
-        ordered_recipes.append(recipe)
+            # get deep recipes for ingredient
+            ingredient_recipes = get_valid_ordered_recipes(
+                bank_item_ids, [ingredient.item.recipe], valid_job_ids
+            )
+            ordered_recipes.extend(ingredient_recipes)
+        else:
+            ordered_recipes.append(recipe)
 
     return ordered_recipes
 
@@ -74,29 +84,8 @@ def get_merged_ordered_with_recipe_items(
     )
 
 
-@timeit
 def get_recipes_to_upgrade_jobs(session: Session, character: Character) -> set[Recipe]:
     recipes: set[Recipe] = set()
-    bank_item_ids: list[int] = [item.id for item in character.bank_items]
-
-    total_ingredients_subquery = (
-        session.query(
-            Ingredient.recipe_id,
-            func.count(Ingredient.id).label("total_ingredient_count"),
-        )
-        .group_by(Ingredient.recipe_id)
-        .subquery()
-    )
-
-    filtered_ingredients_subquery = (
-        session.query(
-            Ingredient.recipe_id,
-            func.count(Ingredient.id).label("filtered_ingredient_count"),
-        )
-        .filter(Ingredient.item_id.in_(bank_item_ids))
-        .group_by(Ingredient.recipe_id)
-        .subquery()
-    )
 
     for job_info in character.harvest_jobs_infos:
         if job_info.lvl == 200:
@@ -106,19 +95,9 @@ def get_recipes_to_upgrade_jobs(session: Session, character: Character) -> set[R
             session.query(Recipe)
             .join(Item, Item.id == Recipe.result_item_id)
             .join(Ingredient, Recipe.id == Ingredient.recipe_id)
-            .join(
-                filtered_ingredients_subquery,
-                Recipe.id == filtered_ingredients_subquery.c.recipe_id,
-            )
-            .join(
-                total_ingredients_subquery,
-                Recipe.id == total_ingredients_subquery.c.recipe_id,
-            )
             .filter(
                 Recipe.job_id == job_info.job_id,
                 Item.level.between(job_info.lvl - 40, job_info.lvl),
-                total_ingredients_subquery.c.total_ingredient_count
-                == filtered_ingredients_subquery.c.filtered_ingredient_count,
             )
             .group_by(Recipe.id)
             .options(joinedload(Recipe.ingredients).subqueryload(Ingredient.item))

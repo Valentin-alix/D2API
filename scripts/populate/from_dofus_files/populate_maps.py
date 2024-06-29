@@ -175,7 +175,7 @@ def init_map_directions(session: Session):
     maps_direction: list[MapDirection] = []
 
     zaapis_map_ids: list[int] = [
-        zaapi.map.id for zaapis in get_zaapis(session).values() for zaapi in zaapis
+        zaapi.map_id for zaapis in get_zaapis().values() for zaapi in zaapis
     ]
 
     for map in tqdm(session.query(Map).options(joinedload(Map.waypoint)).all()):

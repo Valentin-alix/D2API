@@ -16,7 +16,7 @@ class Item(Base):
     type_item: Mapped[TypeItem] = relationship()
     level: Mapped[int] = mapped_column(nullable=False)
     weight: Mapped[int] = mapped_column(nullable=False)
-    recipe: Mapped[Recipe] = relationship(back_populates="result_item")
+    recipe: Mapped[Recipe | None] = relationship(back_populates="result_item")
     icon_id: Mapped[int | None] = mapped_column(ForeignKey("icon.id"), nullable=True)
     icon: Mapped[Icon | None] = relationship()
     is_saleable: Mapped[bool] = mapped_column(nullable=False)
