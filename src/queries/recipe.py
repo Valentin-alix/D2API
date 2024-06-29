@@ -50,7 +50,7 @@ def get_valid_ordered_recipes(
         if recipes_for_recipe is not None:
             ordered_recipes.extend(recipes_for_recipe)
 
-    return ordered_recipes
+    return list(set(ordered_recipes))
 
 
 @timeit
