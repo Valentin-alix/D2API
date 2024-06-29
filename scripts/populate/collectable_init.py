@@ -70,7 +70,7 @@ async def fetch_all(db_session, session, urls):
 async def main(db_session: Session):
     step = 10
     for _range in tqdm(range(step, 20000, step)):
-        urls = range(_range - (step - 1), _range)
+        urls = range(_range - step, _range)
         connector = aiohttp.TCPConnector(limit=10, force_close=True)
         async with aiohttp.ClientSession(
             connector=connector, timeout=aiohttp.ClientTimeout(total=None)

@@ -12,6 +12,8 @@ from src.models.items.item import Item
 
 async def init_collectables(session: Session):
     print("importing collectables...")
+    session.query(CollectableMapInfo).delete()
+    session.query(Collectable).delete()
     if session.query(Collectable).first() is not None:
         return
 
