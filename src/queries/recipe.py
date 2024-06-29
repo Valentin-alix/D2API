@@ -1,3 +1,4 @@
+import logging
 from sqlalchemy import Row, and_, func
 from sqlalchemy.orm import Session, aliased, joinedload
 
@@ -10,29 +11,44 @@ from src.models.items.type_item import TypeItem
 from src.models.price import Price
 from src.models.recipe import Recipe
 
+logger = logging.getLogger(__name__)
+
+
+def get_deep_recipes_for_recipe(
+    bank_item_ids: list[int], recipe: Recipe, valid_job_ids: list[int]
+) -> list[Recipe] | None:
+    recipes_item: list[Recipe] = []
+    if recipe.job_id not in valid_job_ids:
+        return None
+    for ingredient in sorted(
+        recipe.ingredients, key=lambda elem: elem.item.level, reverse=True
+    ):
+        if ingredient.item.recipe is not None:
+            # get deep recipes for ingredient
+            ingredient_recipes = get_deep_recipes_for_recipe(
+                bank_item_ids, ingredient.item.recipe, valid_job_ids
+            )
+            if ingredient_recipes is None:
+                return None
+            recipes_item.extend(ingredient_recipes)
+        elif ingredient.item.id not in bank_item_ids:
+            return None
+    recipes_item.append(recipe)
+    return recipes_item
+
 
 def get_valid_ordered_recipes(
     bank_item_ids: list[int], recipes: list[Recipe], valid_job_ids: list[int]
 ) -> list[Recipe]:
+
     recipes.sort(key=lambda recipe: recipe.result_item.level, reverse=True)
     ordered_recipes: list[Recipe] = []
     for recipe in recipes:
-        if recipe.job_id not in valid_job_ids:
-            continue
-        for ingredient in sorted(
-            recipe.ingredients, key=lambda elem: elem.item.level, reverse=True
-        ):
-            if ingredient.item.recipe is None:
-                if ingredient.item.id not in bank_item_ids:
-                    break
-                continue
-            # get deep recipes for ingredient
-            ingredient_recipes = get_valid_ordered_recipes(
-                bank_item_ids, [ingredient.item.recipe], valid_job_ids
-            )
-            ordered_recipes.extend(ingredient_recipes)
-        else:
-            ordered_recipes.append(recipe)
+        recipes_for_recipe = get_deep_recipes_for_recipe(
+            bank_item_ids, recipe, valid_job_ids
+        )
+        if recipes_for_recipe is not None:
+            ordered_recipes.extend(recipes_for_recipe)
 
     return ordered_recipes
 
@@ -127,7 +143,6 @@ def get_best_recipes(session: Session, character: Character) -> set[Recipe]:
     return recipes
 
 
-@timeit
 def get_best_recipe_for_benefits(
     session: Session,
     server_id: int,
