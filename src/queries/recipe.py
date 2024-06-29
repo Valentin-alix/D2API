@@ -22,9 +22,9 @@ def get_valid_ordered_recipes(
         for ingredient in sorted(
             recipe.ingredients, key=lambda elem: elem.item.level, reverse=True
         ):
-            if ingredient.item.id not in bank_item_ids:
-                break
             if ingredient.item.recipe is None:
+                if ingredient.item.id not in bank_item_ids:
+                    break
                 continue
             # get deep recipes for ingredient
             ingredient_recipes = get_valid_ordered_recipes(
