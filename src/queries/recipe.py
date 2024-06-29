@@ -48,9 +48,11 @@ def get_valid_ordered_recipes(
             bank_item_ids, recipe, valid_job_ids
         )
         if recipes_for_recipe is not None:
-            ordered_recipes.extend(recipes_for_recipe)
+            ordered_recipes.extend(
+                [elem for elem in recipes_for_recipe if elem not in ordered_recipes]
+            )
 
-    return list(set(ordered_recipes))
+    return ordered_recipes
 
 
 @timeit
