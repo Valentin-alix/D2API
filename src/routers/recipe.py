@@ -9,7 +9,7 @@ from src.models.config.character import Character
 from src.queries.recipe import (
     get_best_recipe_for_benefits,
     get_valid_ordered_recipes,
-    get_recipes_to_upgrade_jobs,
+    get_best_recipes,
 )
 from src.security.auth import login
 
@@ -23,11 +23,11 @@ def get_default_recipes(
 ):
     character = session.get_one(Character, character_id)
     bank_item_ids: list[int] = [elem.id for elem in character.bank_items]
-    craft_items = list(get_recipes_to_upgrade_jobs(session, character))
-    ordered_recipes = get_valid_ordered_recipes(
-        bank_item_ids, craft_items, HARVEST_JOBS_ID
+    best_recipes = list(get_best_recipes(session, character))
+    ordered_valid_recipes = get_valid_ordered_recipes(
+        bank_item_ids, best_recipes, HARVEST_JOBS_ID
     )
-    return ordered_recipes
+    return ordered_valid_recipes
 
 
 @router.get("/best_recipe_benefits/", response_model=list[tuple[str, float]])

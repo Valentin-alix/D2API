@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session, aliased, joinedload
 
 from EzreD2Shared.shared.enums import CategoryEnum
 from EzreD2Shared.shared.utils.debugger import timeit
-from src.models.config.character import Character
+from src.models.config.character import Character, CharacterJobInfo
 from src.models.ingredient import Ingredient
 from src.models.items.item import Item
 from src.models.items.type_item import TypeItem
@@ -84,26 +84,45 @@ def get_merged_ordered_with_recipe_items(
     )
 
 
-def get_recipes_to_upgrade_jobs(session: Session, character: Character) -> set[Recipe]:
+def get_recipes_for_upgrading_job(
+    job_info: CharacterJobInfo, session: Session
+) -> list[Recipe]:
+    recipes_job = (
+        session.query(Recipe)
+        .join(Item, Item.id == Recipe.result_item_id)
+        .join(Ingredient, Recipe.id == Ingredient.recipe_id)
+        .filter(
+            Recipe.job_id == job_info.job_id,
+            Item.level.between(job_info.lvl - 80, job_info.lvl),
+        )
+        .group_by(Recipe.id)
+        .options(joinedload(Recipe.ingredients).subqueryload(Ingredient.item))
+        .all()
+    )
+    return recipes_job
+
+
+def get_recipes_for_benefits(job_id: int, session: Session) -> list[Recipe]:
+    recipes_job = (
+        session.query(Recipe)
+        .join(Item, Recipe.result_item_id == Item.id)
+        .join(Price, Price.item_id == Item.id)
+        .filter(Recipe.job_id == job_id)
+        .order_by(Price.average.desc())
+        .options(joinedload(Recipe.ingredients).subqueryload(Ingredient.item))
+        .all()
+    )
+    return recipes_job
+
+
+def get_best_recipes(session: Session, character: Character) -> set[Recipe]:
     recipes: set[Recipe] = set()
 
     for job_info in character.harvest_jobs_infos:
         if job_info.lvl == 200:
-            continue
-
-        recipes_job = (
-            session.query(Recipe)
-            .join(Item, Item.id == Recipe.result_item_id)
-            .join(Ingredient, Recipe.id == Ingredient.recipe_id)
-            .filter(
-                Recipe.job_id == job_info.job_id,
-                Item.level.between(job_info.lvl - 40, job_info.lvl),
-            )
-            .group_by(Recipe.id)
-            .options(joinedload(Recipe.ingredients).subqueryload(Ingredient.item))
-            .all()
-        )
-        recipes.update(recipes_job)
+            recipes.update(get_recipes_for_benefits(job_info.job_id, session))
+        else:
+            recipes.update(get_recipes_for_upgrading_job(job_info, session))
 
     return recipes
 
