@@ -5,8 +5,8 @@ from EzreD2Shared.shared.schemas.item import ItemSchema
 from EzreD2Shared.shared.schemas.sub_area import SubAreaSchema
 from src.database import session_local
 from src.models.collectable import Collectable
-from src.models.config.character import Character
-from src.models.navigations.sub_area import SubArea
+from src.models.character import Character
+from src.models.sub_area import SubArea
 from src.queries.sub_area import (
     get_dropable_items,
     get_max_time_fighter,

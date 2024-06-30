@@ -9,7 +9,7 @@ from EzreD2Shared.shared.enums import ElemEnum
 from src.models.base import Base
 
 if TYPE_CHECKING:
-    from src.models.stats.characteristic import Characteristic
+    from src.models.characteristic import Characteristic
 
 
 class Effect(Base):

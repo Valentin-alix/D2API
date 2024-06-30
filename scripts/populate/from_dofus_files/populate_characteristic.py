@@ -7,7 +7,7 @@ from scripts.populate.const import (
     D2O_CHARACTERISTIC_CATEGORY_PATH,
     D2O_CHARACTERISTIC_PATH,
 )
-from src.models.stats.characteristic import (
+from src.models.characteristic import (
     Characteristic,
     CharacteristicCategory,
 )

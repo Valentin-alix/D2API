@@ -7,7 +7,7 @@ from EzreD2Shared.shared.utils.clean import clean_item_name
 from scripts.populate.collectable_init import get_map_collectables_info
 from scripts.populate.const import D2O_SKILL_PATH
 from src.models.collectable import Collectable, CollectableMapInfo
-from src.models.items.item import Item
+from src.models.item import Item
 
 
 async def init_collectables(session: Session):

@@ -4,9 +4,9 @@ from pydantic import BaseModel, ConfigDict
 
 from EzreD2Shared.shared.enums import FromDirection
 from EzreD2Shared.shared.schemas.zaapi import ZaapiSchema
-from src.models.navigations.map import Map
-from src.models.navigations.map_direction import MapDirection
-from src.models.navigations.waypoint import Waypoint
+from src.models.map import Map
+from src.models.map_direction import MapDirection
+from src.models.waypoint import Waypoint
 
 type ActionMapChange = MapDirection | ZaapiSchema | Waypoint
 

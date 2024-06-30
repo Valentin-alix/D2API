@@ -12,11 +12,11 @@ from sqlalchemy.orm import (
 from EzreD2Shared.shared.consts.jobs import HARVEST_JOBS_ID
 from EzreD2Shared.shared.enums import BreedEnum, ElemEnum
 from src.models.base import Base
-from src.models.items.item import Item
+from src.models.item import Item
 from src.models.job import Job
-from src.models.navigations.waypoint import Waypoint
+from src.models.waypoint import Waypoint
 from src.models.server import Server
-from src.models.stats.breed import Breed
+from src.models.breed import Breed
 
 character_waypoint_association = Table(
     "character_waypoint_association",

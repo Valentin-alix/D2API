@@ -7,8 +7,8 @@ from EzreD2Shared.shared.consts.adaptative.positions import EMPTY_POSITION
 from EzreD2Shared.shared.enums import CharacteristicEnum, ElemEnum
 from EzreD2Shared.shared.schemas.character import CharacterSchema
 from EzreD2Shared.shared.schemas.spell_lvl import CurrentBoostSchema, SpellLevelSchema
-from src.models.stats.effect import Effect
-from src.models.stats.spell import (
+from src.models.effect import Effect
+from src.models.spell import (
     Spell,
     SpellLevel,
     SpellLevelEffect,

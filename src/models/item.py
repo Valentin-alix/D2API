@@ -3,7 +3,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
 from src.models.icon import Icon
-from src.models.items.type_item import TypeItem
+from src.models.type_item import TypeItem
 from src.models.recipe import Recipe
 
 

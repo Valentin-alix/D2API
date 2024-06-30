@@ -2,9 +2,9 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
-from src.models.items.item import Item
+from src.models.item import Item
 from src.models.job import Job
-from src.models.navigations.map import Map
+from src.models.map import Map
 
 
 class Collectable(Base):

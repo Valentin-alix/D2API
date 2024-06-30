@@ -9,8 +9,8 @@ from EzreD2Shared.shared.enums import DispellableEnum
 from src.models.base import Base
 
 if TYPE_CHECKING:
-    from src.models.stats.breed import Breed
-    from src.models.stats.effect import Effect
+    from src.models.breed import Breed
+    from src.models.effect import Effect
 
 
 class SpellVariant(Base):

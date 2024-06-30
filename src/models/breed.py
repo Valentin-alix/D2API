@@ -5,7 +5,7 @@ from typing import List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
-from src.models.stats.spell import SpellVariant
+from src.models.spell import SpellVariant
 
 
 class Breed(Base):

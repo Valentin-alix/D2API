@@ -11,15 +11,15 @@ from EzreD2Shared.shared.utils.randomizer import (
     multiply_offset,
 )
 from src.models.collectable import Collectable, CollectableMapInfo
-from src.models.config.character import Character
+from src.models.character import Character
 from src.models.drop import Drop
-from src.models.items.item import Item
+from src.models.item import Item
 from src.models.job import Job
 from src.models.monster import Monster
-from src.models.navigations.area import Area
-from src.models.navigations.map import Map
-from src.models.navigations.map_direction import MapDirection
-from src.models.navigations.sub_area import SubArea
+from src.models.area import Area
+from src.models.map import Map
+from src.models.map_direction import MapDirection
+from src.models.sub_area import SubArea
 from src.models.price import Price
 from src.queries.monster import get_monster_res_filter_elem
 

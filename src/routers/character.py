@@ -9,9 +9,9 @@ from EzreD2Shared.shared.schemas.collectable import CollectableSchema
 from EzreD2Shared.shared.schemas.item import ItemSchema
 from EzreD2Shared.shared.schemas.waypoint import WaypointSchema
 from src.database import session_local
-from src.models.config.character import Character, CharacterJobInfo
-from src.models.items.item import Item
-from src.models.navigations.waypoint import Waypoint
+from src.models.character import Character, CharacterJobInfo
+from src.models.item import Item
+from src.models.waypoint import Waypoint
 from src.queries.character import (
     get_max_pods_character,
     get_possible_collectable,

@@ -5,7 +5,7 @@ from EzreD2Shared.shared.enums import CharacteristicEnum, ElemEnum
 from EzreD2Shared.shared.schemas.character import CharacterSchema
 from EzreD2Shared.shared.schemas.spell_lvl import CurrentBoostSchema, SpellLevelSchema
 from src.database import session_local
-from src.models.stats.spell import SpellLevel
+from src.models.spell import SpellLevel
 from src.queries.spell import (
     choose_spells,
     get_max_range_valuable_dmg_spell,

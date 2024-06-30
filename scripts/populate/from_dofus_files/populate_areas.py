@@ -5,8 +5,8 @@ from tqdm import tqdm
 
 from scripts.populate.const import D2O_AREA_PATH, D2O_SUB_AREA_PATH
 from src.models.monster import Monster
-from src.models.navigations.area import Area
-from src.models.navigations.sub_area import (
+from src.models.area import Area
+from src.models.sub_area import (
     SubArea,
     monster_sub_area_association,
 )

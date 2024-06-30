@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 
 from EzreD2Shared.shared.schemas.item import ItemSchema
 from src.database import session_local
-from src.models.config.character import Character
+from src.models.character import Character
 from src.models.icon import Icon
-from src.models.items.item import Item
+from src.models.item import Item
 from src.queries.recipe import (
     get_merged_ordered_with_recipe_items,
 )

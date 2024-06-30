@@ -7,7 +7,7 @@ from EzreD2Shared.shared.enums import FromDirection, ToDirection
 from src.models.base import Base
 
 if TYPE_CHECKING:
-    from src.models.navigations.map import Map
+    from src.models.map import Map
 
 
 class MapDirection(Base):

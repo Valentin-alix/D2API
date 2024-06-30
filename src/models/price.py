@@ -4,7 +4,7 @@ from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
-from src.models.items.item import Item
+from src.models.item import Item
 from src.models.server import Server
 
 

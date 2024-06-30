@@ -4,10 +4,10 @@ from sqlalchemy.orm import Session, aliased, joinedload
 
 from EzreD2Shared.shared.enums import CategoryEnum
 from EzreD2Shared.shared.utils.debugger import timeit
-from src.models.config.character import Character, CharacterJobInfo
+from src.models.character import Character, CharacterJobInfo
 from src.models.ingredient import Ingredient
-from src.models.items.item import Item
-from src.models.items.type_item import TypeItem
+from src.models.item import Item
+from src.models.type_item import TypeItem
 from src.models.price import Price
 from src.models.recipe import Recipe
 

@@ -11,10 +11,10 @@ from scripts.populate.const import (
     D2O_SPELL_VARIANT_PATH,
     D2O_SPELLS_PATH,
 )
-from src.models.stats.breed import Breed
-from src.models.stats.characteristic import Characteristic
-from src.models.stats.effect import Effect
-from src.models.stats.spell import (
+from src.models.breed import Breed
+from src.models.characteristic import Characteristic
+from src.models.effect import Effect
+from src.models.spell import (
     Spell,
     SpellLevel,
     SpellLevelEffect,

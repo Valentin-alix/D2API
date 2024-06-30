@@ -4,7 +4,7 @@ from EzreD2Shared.shared.consts.object_configs import COLLECTABLE_CONFIG_BY_NAME
 from EzreD2Shared.shared.entities.object_search_config import ObjectSearchConfig
 from EzreD2Shared.shared.utils.clean import clean_item_name
 from src.models.collectable import Collectable, CollectableMapInfo
-from src.models.items.item import Item
+from src.models.item import Item
 
 
 def get_possible_collectables_configs_on_map(

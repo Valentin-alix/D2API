@@ -11,8 +11,8 @@ from scripts.populate.const import (
     D2O_TYPE_ITEM_PATH,
 )
 from src.models.icon import Icon
-from src.models.items.item import Item
-from src.models.items.type_item import TypeItem
+from src.models.item import Item
+from src.models.type_item import TypeItem
 from src.models.price import Price
 from src.models.server import Server
 

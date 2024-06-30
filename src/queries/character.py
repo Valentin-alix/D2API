@@ -2,8 +2,8 @@ from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
 from src.models.collectable import Collectable
-from src.models.config.character import Character, CharacterJobInfo
-from src.models.items.item import Item
+from src.models.character import Character, CharacterJobInfo
+from src.models.item import Item
 from src.models.job import Job
 
 

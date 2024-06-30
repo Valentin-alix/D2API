@@ -6,7 +6,7 @@ from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
-from src.models.items.item import Item
+from src.models.item import Item
 
 if TYPE_CHECKING:
     from src.models.monster import Monster

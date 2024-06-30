@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from EzreD2Shared.shared.enums import CategoryEnum
 from EzreD2Shared.shared.schemas.type_item import TypeItemSchema
 from src.database import session_local
-from src.models.items.type_item import TypeItem
+from src.models.type_item import TypeItem
 from src.security.auth import login
 
 router = APIRouter(prefix="/type_item", dependencies=[Depends(login)])

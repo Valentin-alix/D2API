@@ -8,8 +8,8 @@ from EzreD2Shared.shared.schemas.map import MapSchema
 from EzreD2Shared.shared.schemas.map_direction import MapDirectionSchema
 from EzreD2Shared.shared.schemas.map_with_action import MapWithActionSchema
 from src.database import session_local
-from src.models.navigations.map import Map
-from src.models.navigations.map_direction import MapDirection
+from src.models.map import Map
+from src.models.map_direction import MapDirection
 from src.queries.astar_maps import AstarMap
 from src.queries.map import (
     get_limit_maps_sub_area_id,

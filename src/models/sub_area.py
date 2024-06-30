@@ -11,11 +11,11 @@ from sqlalchemy.orm import (
 from EzreD2Shared.shared.consts.areas import AGRESSIVE_LIMIT, FARMABLE_SUB_AREAS
 from src.models.base import Base
 from src.models.monster import Monster, monster_sub_area_association
-from src.models.navigations.area import Area
+from src.models.area import Area
 
 if TYPE_CHECKING:
-    from src.models.navigations.map import Map
-    from src.models.navigations.world import World
+    from src.models.map import Map
+    from src.models.world import World
 
 
 class SubArea(Base):

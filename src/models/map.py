@@ -7,13 +7,13 @@ from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
-from src.models.navigations.map_direction import MapDirection
-from src.models.navigations.sub_area import SubArea
+from src.models.map_direction import MapDirection
+from src.models.sub_area import SubArea
 
 if TYPE_CHECKING:
     from src.models.collectable import CollectableMapInfo
-    from src.models.navigations.waypoint import Waypoint
-from src.models.navigations.world import World
+    from src.models.waypoint import Waypoint
+from src.models.world import World
 
 
 class Map(Base):

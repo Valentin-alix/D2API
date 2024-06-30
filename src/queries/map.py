@@ -6,10 +6,10 @@ from sqlalchemy.orm import Session, aliased, joinedload, selectinload
 from sqlalchemy.sql.base import ExecutableOption
 
 from EzreD2Shared.shared.enums import FromDirection
-from src.models.navigations.map import Map
-from src.models.navigations.map_direction import MapDirection
-from src.models.navigations.sub_area import SubArea
-from src.models.navigations.world import World
+from src.models.map import Map
+from src.models.map_direction import MapDirection
+from src.models.sub_area import SubArea
+from src.models.world import World
 
 
 def get_limit_maps_sub_area_id(

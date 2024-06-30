@@ -9,7 +9,7 @@ from src.models.base import Base
 
 if TYPE_CHECKING:
     from src.models.drop import Drop
-    from src.models.navigations.sub_area import SubArea
+    from src.models.sub_area import SubArea
 
 monster_sub_area_association = Table(
     "monster_sub_area_association",

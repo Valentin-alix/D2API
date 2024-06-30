@@ -9,13 +9,13 @@ from scripts.populate.const import (
     D2O_WAYPOINT_PATH,
     D2O_WORLD_PATH,
 )
-from src.models.navigations.map import Map
-from src.models.navigations.map_direction import (
+from src.models.map import Map
+from src.models.map_direction import (
     MapDirection,
 )
-from src.models.navigations.sub_area import SubArea
-from src.models.navigations.waypoint import Waypoint
-from src.models.navigations.world import World
+from src.models.sub_area import SubArea
+from src.models.waypoint import Waypoint
+from src.models.world import World
 from src.queries.map import get_related_neighbor_map
 from src.queries.utils import get_auto_id
 from src.queries.zaapi import get_zaapis

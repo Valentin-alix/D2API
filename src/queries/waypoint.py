@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from src.models.navigations.map import Map
-from src.models.navigations.waypoint import Waypoint
+from src.models.map import Map
+from src.models.waypoint import Waypoint
 
 
 def get_waypoints_by_world(session: Session, world_id: int) -> list[Waypoint]:

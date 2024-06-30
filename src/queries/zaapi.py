@@ -14,7 +14,7 @@ from EzreD2Shared.shared.consts.maps import (
 )
 from EzreD2Shared.shared.enums import CategoryZaapiEnum
 from EzreD2Shared.shared.schemas.zaapi import ZaapiSchema
-from src.models.navigations.map import Map
+from src.models.map import Map
 
 
 @cached(cache={})

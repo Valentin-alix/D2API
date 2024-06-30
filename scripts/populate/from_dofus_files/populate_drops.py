@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from scripts.populate.const import D2O_MONSTER_PATH
 from src.models.drop import Drop
-from src.models.items.item import Item
+from src.models.item import Item
 from src.models.monster import Monster
 
 
