@@ -24,6 +24,7 @@ bash scripts/populate.sh
 
 Example for collectable_map_info & collectable
 ```
+source .env
 docker exec -i ezred2db pg_dump -U $DB_USERNAME --data-only --column-inserts --table=collectable $DB_NAME > coll.sql
 docker exec -i ezred2db pg_dump -U $DB_USERNAME --data-only  --column-inserts --table=collectable_map_info $DB_NAME > coll_map_info.sql
 

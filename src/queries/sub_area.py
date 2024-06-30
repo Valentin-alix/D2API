@@ -145,8 +145,8 @@ STOP_JOB_LVL_AREA_FARM: dict[int, int] = {AreaEnum.INCARNAM: 20}
 WEIGHT_BY_JOB: dict[JobEnum, float] = {
     JobEnum.ALCHIMIST: 5,
     JobEnum.WOODCUTTER: 10,
-    JobEnum.PEASANT: 1,
-    JobEnum.FISHERMAN: 1,
+    JobEnum.PEASANT: 3,
+    JobEnum.FISHERMAN: 3,
 }
 
 
