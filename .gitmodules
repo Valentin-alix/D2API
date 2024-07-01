@@ -1,6 +1,6 @@
 [submodule "EzreD2Shared"]
 	path = EzreD2Shared
-	url = https://github.com/Valentin-alix/EzreD2Shared
+	url = https://github.com/Valentin-alix/D2Shared
 [submodule "PyDofus"]
 	path = PyDofus
 	url = https://github.com/Valentin-alix/PyDofus
