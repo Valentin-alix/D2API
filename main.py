@@ -29,6 +29,7 @@ from src.routers import (
     template,
     type_item,
     world,
+    login,
 )
 
 
@@ -70,6 +71,7 @@ app.include_router(sub_area.router)
 app.include_router(type_item.router)
 app.include_router(world.router)
 app.include_router(template.router)
+app.include_router(login.router)
 
 
 def is_db_ready(host: str, port: int) -> bool:
