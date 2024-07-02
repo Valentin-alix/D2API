@@ -17,15 +17,15 @@ def populate_config(session: Session, user_id: int):
     range_wait = get_or_create(
         session,
         RangeWait,
-        start_time=time(microsecond=300000),
-        end_time=time(microsecond=700000),
+        start=0.3,
+        end=0.7,
         commit=False,
     )[0]
     range_new_map = get_or_create(
         session,
         RangeWait,
-        start_time=time(second=1),
-        end_time=time(second=6),
+        start=1,
+        end=6,
         commit=False,
     )[0]
 

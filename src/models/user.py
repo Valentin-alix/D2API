@@ -31,7 +31,7 @@ class RangeWait(Base):
     end: Mapped[float] = mapped_column(nullable=False)
 
     __table_args__ = (
-        CheckConstraint("end > start", name="check_end_greater_than_start"),
+        CheckConstraint('"end" > start', name="check_end_greater_than_start"),
     )
 
 
@@ -49,12 +49,12 @@ class ConfigUser(Base):
     )
 
     range_new_map_id: Mapped[int] = mapped_column(
-        ForeignKey("range_time.id"), nullable=False
+        ForeignKey("range_wait.id"), nullable=False
     )
     range_new_map: Mapped[RangeWait] = relationship(foreign_keys=[range_new_map_id])
 
     range_wait_id: Mapped[int] = mapped_column(
-        ForeignKey("range_time.id"), nullable=False
+        ForeignKey("range_wait.id"), nullable=False
     )
     range_wait: Mapped[RangeWait] = relationship(foreign_keys=[range_wait_id])
 
