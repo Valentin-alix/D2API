@@ -6,10 +6,6 @@ from sqlalchemy.orm import Session, aliased, joinedload
 
 from D2Shared.shared.enums import AreaEnum, JobEnum
 from D2Shared.shared.utils.debugger import timeit
-from D2Shared.shared.utils.randomizer import (
-    RANGE_DURATION_ACTIVITY,
-    multiply_offset,
-)
 from src.models.collectable import Collectable, CollectableMapInfo
 from src.models.character import Character
 from src.models.drop import Drop
@@ -99,7 +95,7 @@ def get_max_time_fighter(session: Session, sub_areas: list[SubArea]) -> int:
         .count()
     )
     maps_time = min((300 + (count_maps * 100) / math.log2(count_maps)) * 2, 3600)
-    return int(maps_time * multiply_offset(RANGE_DURATION_ACTIVITY))
+    return int(maps_time)
 
 
 STOP_LVL_SUB_AREA_FARM: dict[int, int] = {AreaEnum.INCARNAM: 15}
@@ -256,7 +252,7 @@ def get_max_time_harvester(session: Session, sub_areas: list[SubArea]) -> int:
         .count()
     )
     maps_time = min((300 + (count_maps * 100) / math.log2(count_maps)) * 0.6, 3600)
-    return int(maps_time * multiply_offset(RANGE_DURATION_ACTIVITY))
+    return int(maps_time)
 
 
 def get_average_sub_area_weight(

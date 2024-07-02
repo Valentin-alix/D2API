@@ -28,16 +28,18 @@ def populate_config(session: Session, user_id: int):
         end_time=time(second=6),
         commit=False,
     )[0]
-    session.add(
-        ConfigUser(range_wait=range_wait, range_new_map=range_new_map, user_id=user_id)
-    )
 
-    range_hours: list[RangeHourPlayTime] = []
-    for range_hour in DEFAULT_RANGES_HOURS_PLAYTIME:
-        range_hours.append(
-            RangeHourPlayTime(
-                start_time=range_hour[0], end_time=range_hour[1], config_user_id=1
-            )
-        )
-    session.add_all(range_hours)
+    config_user = ConfigUser(
+        range_wait=range_wait, range_new_map=range_new_map, user_id=user_id
+    )
+    session.add(config_user)
     session.commit()
+
+    for range_hour in DEFAULT_RANGES_HOURS_PLAYTIME:
+        get_or_create(
+            session,
+            RangeHourPlayTime,
+            start_time=range_hour[0],
+            end_time=range_hour[1],
+            config_user=config_user,
+        )

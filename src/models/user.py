@@ -12,7 +12,10 @@ class RangeHourPlayTime(Base):
     start_time = Column(Time, nullable=False)
     end_time = Column(Time, nullable=False)
     config_user_id: Mapped[int] = mapped_column(
-        ForeignKey("config_user.id"), nullable=False
+        ForeignKey("config_user.id", ondelete="CASCADE"), nullable=False
+    )
+    config_user: Mapped[ConfigUser] = relationship(
+        back_populates="ranges_hour_playtime"
     )
 
     __table_args__ = (
@@ -36,7 +39,9 @@ class RangeTime(Base):
 
 class ConfigUser(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
-    ranges_hour_playtime: Mapped[list[RangeHourPlayTime]] = relationship()
+    ranges_hour_playtime: Mapped[list[RangeHourPlayTime]] = relationship(
+        back_populates="config_user"
+    )
     afk_time_at_start = Column(Time, default=None, nullable=True)
     time_between_sentence = Column(Time, default=time(minute=30))
     time_fighter = Column(Time, default=time(hour=1))
