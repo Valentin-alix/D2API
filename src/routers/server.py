@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.schemas.server import ServerSchema
+from D2Shared.shared.schemas.server import ServerSchema
 from src.database import session_local
 from src.models.server import Server
 from src.security.auth import login

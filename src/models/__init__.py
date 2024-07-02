@@ -17,8 +17,8 @@ from .waypoint import *
 from .world import *
 from .map import *
 
-from .items.type_item import *
-from .items.item import *
+from .type_item import *
+from .item import *
 
 from .characteristic import *
 from .spell import *

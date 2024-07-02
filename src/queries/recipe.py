@@ -2,8 +2,8 @@ import logging
 from sqlalchemy import Row, and_, func
 from sqlalchemy.orm import Session, aliased, joinedload
 
-from EzreD2Shared.shared.enums import CategoryEnum
-from EzreD2Shared.shared.utils.debugger import timeit
+from D2Shared.shared.enums import CategoryEnum
+from D2Shared.shared.utils.debugger import timeit
 from src.models.character import Character, CharacterJobInfo
 from src.models.ingredient import Ingredient
 from src.models.item import Item
@@ -40,7 +40,6 @@ def get_deep_recipes_for_recipe(
 def get_valid_ordered_recipes(
     bank_item_ids: list[int], recipes: list[Recipe], valid_job_ids: list[int]
 ) -> list[Recipe]:
-
     recipes.sort(key=lambda recipe: recipe.result_item.level, reverse=True)
     ordered_recipes: list[Recipe] = []
     for recipe in recipes:

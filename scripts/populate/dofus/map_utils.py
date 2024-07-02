@@ -1,4 +1,4 @@
-from EzreD2Shared.shared.enums import ToDirection
+from D2Shared.shared.enums import ToDirection
 
 
 MAP_WIDTH = 14

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.schemas.item import ItemSchema
-from EzreD2Shared.shared.schemas.sub_area import SubAreaSchema
+from D2Shared.shared.schemas.item import ItemSchema
+from D2Shared.shared.schemas.sub_area import SubAreaSchema
 from src.database import session_local
 from src.models.collectable import Collectable
 from src.models.character import Character

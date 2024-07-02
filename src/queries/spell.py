@@ -3,10 +3,10 @@ from random import shuffle
 from sqlalchemy import case, func
 from sqlalchemy.orm import Session, joinedload
 
-from EzreD2Shared.shared.consts.adaptative.positions import EMPTY_POSITION
-from EzreD2Shared.shared.enums import CharacteristicEnum, ElemEnum
-from EzreD2Shared.shared.schemas.character import CharacterSchema
-from EzreD2Shared.shared.schemas.spell_lvl import CurrentBoostSchema, SpellLevelSchema
+from D2Shared.shared.consts.adaptative.positions import EMPTY_POSITION
+from D2Shared.shared.enums import CharacteristicEnum, ElemEnum
+from D2Shared.shared.schemas.character import CharacterSchema
+from D2Shared.shared.schemas.spell_lvl import CurrentBoostSchema, SpellLevelSchema
 from src.models.effect import Effect
 from src.models.spell import (
     Spell,

@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.consts.object_configs import COLLECTABLE_CONFIG_BY_NAME
-from EzreD2Shared.shared.entities.object_search_config import ObjectSearchConfig
-from EzreD2Shared.shared.utils.clean import clean_item_name
+from D2Shared.shared.consts.object_configs import COLLECTABLE_CONFIG_BY_NAME
+from D2Shared.shared.entities.object_search_config import ObjectSearchConfig
+from D2Shared.shared.utils.clean import clean_item_name
 from src.models.collectable import Collectable, CollectableMapInfo
 from src.models.item import Item
 

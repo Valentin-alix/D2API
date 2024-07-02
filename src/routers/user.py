@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.orm import Session
-from EzreD2Shared.shared.schemas.user import CreateUserSchema, ReadUserSchema
+from D2Shared.shared.schemas.user import CreateUserSchema, ReadUserSchema
 from src.models.user import User
 from dateutil.relativedelta import relativedelta
 from src.security.auth import login, login_for_admin
@@ -22,7 +22,7 @@ def create_user(
 ):
     user = User(
         **user_datas.model_dump(),
-        sub_expire=datetime.datetime.now() + relativedelta(years=1)
+        sub_expire=datetime.datetime.now() + relativedelta(years=1),
     )
     session.add(user)
     session.commit()

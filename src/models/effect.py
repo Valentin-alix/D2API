@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from EzreD2Shared.shared.enums import ElemEnum
+from D2Shared.shared.enums import ElemEnum
 from src.models.base import Base
 
 if TYPE_CHECKING:

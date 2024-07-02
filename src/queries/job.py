@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.utils.text_similarity import get_similarity
+from D2Shared.shared.utils.text_similarity import get_similarity
 from src.models.job import Job
 
 

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.schemas.waypoint import WaypointSchema
+from D2Shared.shared.schemas.waypoint import WaypointSchema
 from src.database import session_local
 from src.queries.waypoint import get_waypoints_by_world
 from src.security.auth import login

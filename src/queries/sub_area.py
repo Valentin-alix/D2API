@@ -4,9 +4,9 @@ import random
 from sqlalchemy import case, func
 from sqlalchemy.orm import Session, aliased, joinedload
 
-from EzreD2Shared.shared.enums import AreaEnum, JobEnum
-from EzreD2Shared.shared.utils.debugger import timeit
-from EzreD2Shared.shared.utils.randomizer import (
+from D2Shared.shared.enums import AreaEnum, JobEnum
+from D2Shared.shared.utils.debugger import timeit
+from D2Shared.shared.utils.randomizer import (
     RANGE_DURATION_ACTIVITY,
     multiply_offset,
 )

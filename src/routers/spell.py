@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.enums import CharacteristicEnum, ElemEnum
-from EzreD2Shared.shared.schemas.character import CharacterSchema
-from EzreD2Shared.shared.schemas.spell_lvl import CurrentBoostSchema, SpellLevelSchema
+from D2Shared.shared.enums import CharacteristicEnum, ElemEnum
+from D2Shared.shared.schemas.character import CharacterSchema
+from D2Shared.shared.schemas.spell_lvl import CurrentBoostSchema, SpellLevelSchema
 from src.database import session_local
 from src.models.spell import SpellLevel
 from src.queries.spell import (

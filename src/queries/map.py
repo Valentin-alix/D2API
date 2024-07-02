@@ -5,7 +5,7 @@ from sqlalchemy import func, literal
 from sqlalchemy.orm import Session, aliased, joinedload, selectinload
 from sqlalchemy.sql.base import ExecutableOption
 
-from EzreD2Shared.shared.enums import FromDirection
+from D2Shared.shared.enums import FromDirection
 from src.models.map import Map
 from src.models.map_direction import MapDirection
 from src.models.sub_area import SubArea

@@ -4,9 +4,9 @@ from typing import cast
 from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
-from EzreD2Shared.shared.entities.object_search_config import ObjectSearchConfig
-from EzreD2Shared.shared.schemas.region import RegionSchema
-from EzreD2Shared.shared.schemas.template_found import TemplateFoundPlacementSchema
+from D2Shared.shared.entities.object_search_config import ObjectSearchConfig
+from D2Shared.shared.schemas.region import RegionSchema
+from D2Shared.shared.schemas.template_found import TemplateFoundPlacementSchema
 from src.models.region import Region
 from src.models.template_found import (
     TemplateFound,

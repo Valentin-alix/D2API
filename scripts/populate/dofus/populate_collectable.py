@@ -3,9 +3,9 @@ import json
 from sqlalchemy.orm import Session
 from tqdm import tqdm
 
-from EzreD2Shared.shared.utils.clean import clean_item_name
-from scripts.populate.collectable_init import get_map_collectables_info
-from scripts.populate.const import D2O_SKILL_PATH
+from D2Shared.shared.utils.clean import clean_item_name
+from scripts.populate.dofus.collectable_init import get_map_collectables_info
+from scripts.populate.dofus.consts import D2O_SKILL_PATH
 from src.models.collectable import Collectable, CollectableMapInfo
 from src.models.item import Item
 

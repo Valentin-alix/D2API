@@ -4,42 +4,42 @@ import os
 import sys
 from pathlib import Path
 
-sys.path.append(os.path.join(Path(__file__).parent.parent.parent))
+sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent))
 
-from scripts.populate.const import (
+from scripts.populate.dofus.consts import (
     D2I_PATH,
 )
-from scripts.populate.from_dofus_files.populate_areas import (
+from scripts.populate.dofus.populate_areas import (
     init_areas,
     init_sub_areas,
 )
-from scripts.populate.from_dofus_files.populate_characteristic import (
+from scripts.populate.dofus.populate_characteristic import (
     init_characteristics,
 )
-from scripts.populate.from_dofus_files.populate_collectable import (
+from scripts.populate.dofus.populate_collectable import (
     init_collectables,
 )
-from scripts.populate.from_dofus_files.populate_drops import (
+from scripts.populate.dofus.populate_drops import (
     init_monsters,
 )
-from scripts.populate.from_dofus_files.populate_icon import init_icons
-from scripts.populate.from_dofus_files.populate_items import (
+from scripts.populate.dofus.populate_icon import init_icons
+from scripts.populate.dofus.populate_items import (
     init_item,
     init_prices_and_servers,
     init_type,
 )
-from scripts.populate.from_dofus_files.populate_jobs import init_job
-from scripts.populate.from_dofus_files.populate_maps import (
+from scripts.populate.dofus.populate_jobs import init_job
+from scripts.populate.dofus.populate_maps import (
     init_map,
     init_map_directions,
     init_waypoint,
     init_world,
 )
-from scripts.populate.from_dofus_files.populate_recipes import (
+from scripts.populate.dofus.populate_recipes import (
     init_recipes,
 )
-from scripts.populate.from_dofus_files.populate_runes import init_runes
-from scripts.populate.from_dofus_files.populate_spells import (
+from scripts.populate.dofus.populate_runes import init_runes
+from scripts.populate.dofus.populate_spells import (
     init_breed,
     init_effects_spell,
     init_spell_levels,

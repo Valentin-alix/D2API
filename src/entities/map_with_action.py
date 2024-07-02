@@ -2,8 +2,8 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
-from EzreD2Shared.shared.enums import FromDirection
-from EzreD2Shared.shared.schemas.zaapi import ZaapiSchema
+from D2Shared.shared.enums import FromDirection
+from D2Shared.shared.schemas.zaapi import ZaapiSchema
 from src.models.map import Map
 from src.models.map_direction import MapDirection
 from src.models.waypoint import Waypoint

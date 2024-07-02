@@ -8,7 +8,7 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-from EzreD2Shared.shared.consts.areas import AGRESSIVE_LIMIT, FARMABLE_SUB_AREAS
+from D2Shared.shared.consts.areas import AGRESSIVE_LIMIT, FARMABLE_SUB_AREAS
 from src.models.base import Base
 from src.models.monster import Monster, monster_sub_area_association
 from src.models.area import Area

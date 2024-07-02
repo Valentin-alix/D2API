@@ -3,8 +3,8 @@ import json
 from sqlalchemy.orm import Session, joinedload
 from tqdm import tqdm
 
-from EzreD2Shared.shared.enums import FromDirection, ToDirection
-from scripts.populate.const import (
+from D2Shared.shared.enums import FromDirection, ToDirection
+from scripts.populate.dofus.consts import (
     D2O_MAP_POS_PATH,
     D2O_WAYPOINT_PATH,
     D2O_WORLD_PATH,

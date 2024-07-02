@@ -3,7 +3,7 @@ import json
 from sqlalchemy.orm import Session
 from tqdm import tqdm
 
-from scripts.populate.const import RUNES_JSON_PATH
+from scripts.populate.dofus.consts import RUNES_JSON_PATH
 from src.models.rune import Rune, Stat
 
 

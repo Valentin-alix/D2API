@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import ColumnElement
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.enums import CategoryEnum
-from EzreD2Shared.shared.schemas.type_item import TypeItemSchema
+from D2Shared.shared.enums import CategoryEnum
+from D2Shared.shared.schemas.type_item import TypeItemSchema
 from src.database import session_local
 from src.models.type_item import TypeItem
 from src.security.auth import login

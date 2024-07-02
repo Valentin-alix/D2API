@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column
 
-from EzreD2Shared.shared.enums import CategoryEnum
+from D2Shared.shared.enums import CategoryEnum
 from src.models.base import Base
 
 

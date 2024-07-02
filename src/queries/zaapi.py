@@ -2,7 +2,7 @@ from cachetools import cached
 from cachetools.keys import hashkey
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.consts.maps import (
+from D2Shared.shared.consts.maps import (
     BONTA_BANK_MAP_ID,
     BONTA_SALE_HOTEL_CONSUMABLE_MAP_ID,
     BONTA_SALE_HOTEL_RESOURCE_MAP_ID,
@@ -12,8 +12,8 @@ from EzreD2Shared.shared.consts.maps import (
     BONTA_WORKSHOP_WOODCUTTER_MAP_ID,
     BONTA_ZAAP_MAP_ID,
 )
-from EzreD2Shared.shared.enums import CategoryZaapiEnum
-from EzreD2Shared.shared.schemas.zaapi import ZaapiSchema
+from D2Shared.shared.enums import CategoryZaapiEnum
+from D2Shared.shared.schemas.zaapi import ZaapiSchema
 from src.models.map import Map
 
 

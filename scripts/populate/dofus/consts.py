@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 PYDOFUS_OUTPUT_FOLDER = os.path.join(
-    Path(__file__).parent.parent.parent, "PyDofus", "output"
+    Path(__file__).parent.parent.parent.parent, "PyDofus", "output"
 )
 
 D2O_FOLDER = os.path.join(PYDOFUS_OUTPUT_FOLDER, "d2o")
@@ -39,8 +39,8 @@ DLM_FOLDER = os.path.join(PYDOFUS_OUTPUT_FOLDER, "dlm")
 AVG_PRICES_FOLDER = os.path.join(PYDOFUS_OUTPUT_FOLDER, "dat")
 
 RUNES_JSON_PATH = os.path.join(
-    Path(__file__).parent.parent.parent, "resources", "runes.json"
+    Path(__file__).parent.parent.parent.parent, "resources", "runes.json"
 )
 COLLECTABLES_MAP_PATH = os.path.join(
-    Path(__file__).parent.parent.parent, "resources", "collectables.json"
+    Path(__file__).parent.parent.parent.parent, "resources", "collectables.json"
 )

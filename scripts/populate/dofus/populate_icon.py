@@ -5,7 +5,7 @@ import numpy
 from sqlalchemy.orm import Session
 from tqdm import tqdm
 
-from scripts.populate.const import GFX_ICONS_ITEMS
+from scripts.populate.dofus.consts import GFX_ICONS_ITEMS
 from src.models.icon import Icon
 
 

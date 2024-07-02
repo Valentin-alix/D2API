@@ -1,7 +1,7 @@
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column
 
-from EzreD2Shared.shared.consts.areas import UNSUB_REGIONS
+from D2Shared.shared.consts.areas import UNSUB_REGIONS
 from src.models.base import Base
 
 

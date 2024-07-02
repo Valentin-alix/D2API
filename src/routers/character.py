@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.schemas.character import (
+from D2Shared.shared.schemas.character import (
     CharacterJobInfoSchema,
     CharacterSchema,
 )
-from EzreD2Shared.shared.schemas.collectable import CollectableSchema
-from EzreD2Shared.shared.schemas.item import ItemSchema
-from EzreD2Shared.shared.schemas.waypoint import WaypointSchema
+from D2Shared.shared.schemas.collectable import CollectableSchema
+from D2Shared.shared.schemas.item import ItemSchema
+from D2Shared.shared.schemas.waypoint import WaypointSchema
 from src.database import session_local
 from src.models.character import Character, CharacterJobInfo
 from src.models.item import Item

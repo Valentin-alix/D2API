@@ -3,7 +3,7 @@ import json
 from sqlalchemy.orm import Session
 from tqdm import tqdm
 
-from scripts.populate.const import D2O_AREA_PATH, D2O_SUB_AREA_PATH
+from scripts.populate.dofus.consts import D2O_AREA_PATH, D2O_SUB_AREA_PATH
 from src.models.monster import Monster
 from src.models.area import Area
 from src.models.sub_area import (

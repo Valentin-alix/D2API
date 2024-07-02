@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session, joinedload
 
-from EzreD2Shared.shared.directions import get_inverted_direction
-from EzreD2Shared.shared.enums import FromDirection
-from EzreD2Shared.shared.utils.algos.astar import Astar
+from D2Shared.shared.directions import get_inverted_direction
+from D2Shared.shared.enums import FromDirection
+from D2Shared.shared.utils.algos.astar import Astar
 from src.entities.map_with_action import MapWithAction
 from src.models.map import Map
 from src.models.map_direction import MapDirection
@@ -32,7 +32,6 @@ def get_neighbors_map_change(
     checked_world_id_waypoints: set[int],
     session: Session,
 ) -> list[MapWithAction]:
-
     neighbors_maps_with_action: list[MapWithAction] = []
     if is_sub and use_transport:
         if (

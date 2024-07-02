@@ -3,7 +3,7 @@ import json
 from sqlalchemy.orm import Session
 from tqdm import tqdm
 
-from scripts.populate.const import D2O_RECIPE_PATH, D2O_SKILL_PATH
+from scripts.populate.dofus.consts import D2O_RECIPE_PATH, D2O_SKILL_PATH
 from src.models.ingredient import Ingredient
 from src.models.recipe import Recipe
 

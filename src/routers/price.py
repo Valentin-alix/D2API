@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.schemas.price import PriceSchema
+from D2Shared.shared.schemas.price import PriceSchema
 from src.database import session_local
 from src.models.price import Price
 from src.security.auth import login

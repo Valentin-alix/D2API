@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.schemas.item import ItemSchema
+from D2Shared.shared.schemas.item import ItemSchema
 from src.database import session_local
 from src.models.character import Character
 from src.models.icon import Icon

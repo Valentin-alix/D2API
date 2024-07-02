@@ -8,7 +8,7 @@ from pydantic import BaseModel, RootModel
 from sqlalchemy.orm import Session
 from tqdm import tqdm
 
-from scripts.populate.const import COLLECTABLES_MAP_PATH
+from scripts.populate.dofus.consts import COLLECTABLES_MAP_PATH
 from src.queries.map import get_related_map
 
 

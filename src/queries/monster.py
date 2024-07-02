@@ -1,6 +1,6 @@
 from sqlalchemy import ColumnElement
 
-from EzreD2Shared.shared.enums import ElemEnum
+from D2Shared.shared.enums import ElemEnum
 from src.models.monster import Monster
 
 

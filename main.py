@@ -11,8 +11,8 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 
-from scripts.populate.create_initial_user import create_initial_users
-from src.database import run_migrations
+from scripts.populate.extern.populate_extern import populate_extern
+from src.database import SessionMaker, run_migrations
 from src.routers import (
     user,
     breed,
@@ -28,16 +28,16 @@ from src.routers import (
     sub_area,
     template,
     type_item,
-    world
+    world,
 )
-
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     run_migrations()
-    create_initial_users()
+    populate_extern(SessionMaker())
     yield
+
 
 app = FastAPI(lifespan=lifespan)
 
@@ -72,13 +72,14 @@ app.include_router(world.router)
 app.include_router(template.router)
 
 
-def is_db_ready(host:str, port:int)->bool:
+def is_db_ready(host: str, port: int) -> bool:
     """Vérifie si la base de données est prête pour les connexions."""
     try:
         with socket.create_connection((host, port), timeout=1):
             return True
     except OSError:
         return False
+
 
 if __name__ == "__main__":
     os.system(

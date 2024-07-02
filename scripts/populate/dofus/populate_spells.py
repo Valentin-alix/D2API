@@ -3,8 +3,8 @@ import json
 from sqlalchemy.orm import Session, joinedload, selectinload
 from tqdm import tqdm
 
-from EzreD2Shared.shared.enums import DispellableEnum, ElemEnum
-from scripts.populate.const import (
+from D2Shared.shared.enums import DispellableEnum, ElemEnum
+from scripts.populate.dofus.consts import (
     D2O_BREED_PATH,
     D2O_EFFECTS_PATH,
     D2O_SPELL_LEVELS_PATH,

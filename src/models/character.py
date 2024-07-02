@@ -9,8 +9,8 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-from EzreD2Shared.shared.consts.jobs import HARVEST_JOBS_ID
-from EzreD2Shared.shared.enums import BreedEnum, ElemEnum
+from D2Shared.shared.consts.jobs import HARVEST_JOBS_ID
+from D2Shared.shared.enums import BreedEnum, ElemEnum
 from src.models.base import Base
 from src.models.item import Item
 from src.models.job import Job

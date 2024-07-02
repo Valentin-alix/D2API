@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from EzreD2Shared.shared.schemas.breed import BreedSchema
+from D2Shared.shared.schemas.breed import BreedSchema
 from src.security.auth import login
 from src.database import session_local
 from src.models.breed import Breed

@@ -3,10 +3,10 @@ from fastapi import APIRouter, Depends
 from fastapi.exceptions import ResponseValidationError
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.enums import FromDirection
-from EzreD2Shared.shared.schemas.map import MapSchema
-from EzreD2Shared.shared.schemas.map_direction import MapDirectionSchema
-from EzreD2Shared.shared.schemas.map_with_action import MapWithActionSchema
+from D2Shared.shared.enums import FromDirection
+from D2Shared.shared.schemas.map import MapSchema
+from D2Shared.shared.schemas.map_direction import MapDirectionSchema
+from D2Shared.shared.schemas.map_with_action import MapWithActionSchema
 from src.database import session_local
 from src.models.map import Map
 from src.models.map_direction import MapDirection

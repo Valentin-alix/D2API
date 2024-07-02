@@ -4,7 +4,7 @@ from sqlalchemy import CheckConstraint, ColumnElement, UniqueConstraint
 from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.orm import Mapped, mapped_column
 
-from EzreD2Shared.shared.schemas.region import RegionSchema
+from D2Shared.shared.schemas.region import RegionSchema
 from src.models.base import Base
 
 

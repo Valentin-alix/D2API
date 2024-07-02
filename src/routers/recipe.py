@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.consts.jobs import HARVEST_JOBS_ID
-from EzreD2Shared.shared.enums import CategoryEnum
-from EzreD2Shared.shared.schemas.recipe import RecipeSchema
+from D2Shared.shared.consts.jobs import HARVEST_JOBS_ID
+from D2Shared.shared.enums import CategoryEnum
+from D2Shared.shared.schemas.recipe import RecipeSchema
 from src.database import session_local
 from src.models.character import Character
 from src.queries.recipe import (

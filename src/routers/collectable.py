@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from EzreD2Shared.shared.entities.object_search_config import ObjectSearchConfig
+from D2Shared.shared.entities.object_search_config import ObjectSearchConfig
 from src.database import session_local
 from src.queries.collectable import get_possible_collectables_configs_on_map
 from src.security.auth import login

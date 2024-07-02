@@ -4,8 +4,8 @@ import os
 from sqlalchemy.orm import Session
 from tqdm import tqdm
 
-from EzreD2Shared.shared.enums import CategoryEnum
-from scripts.populate.const import (
+from D2Shared.shared.enums import CategoryEnum
+from scripts.populate.dofus.consts import (
     AVG_PRICES_FOLDER,
     D2O_ITEM_PATH,
     D2O_TYPE_ITEM_PATH,

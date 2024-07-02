@@ -3,7 +3,7 @@ import json
 from sqlalchemy.orm import Session
 from tqdm import tqdm
 
-from scripts.populate.const import (
+from scripts.populate.dofus.consts import (
     D2O_CHARACTERISTIC_CATEGORY_PATH,
     D2O_CHARACTERISTIC_PATH,
 )
