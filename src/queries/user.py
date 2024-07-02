@@ -1,7 +1,7 @@
 from datetime import time
 from sqlalchemy.orm import Session
 
-from src.models.user import ConfigUser, RangeHourPlayTime, RangeTime
+from src.models.user import ConfigUser, RangeHourPlayTime, RangeWait
 from src.queries.utils import get_or_create
 
 
@@ -16,14 +16,14 @@ def populate_config(session: Session, user_id: int):
     """used at user creation"""
     range_wait = get_or_create(
         session,
-        RangeTime,
+        RangeWait,
         start_time=time(microsecond=300000),
         end_time=time(microsecond=700000),
         commit=False,
     )[0]
     range_new_map = get_or_create(
         session,
-        RangeTime,
+        RangeWait,
         start_time=time(second=1),
         end_time=time(second=6),
         commit=False,

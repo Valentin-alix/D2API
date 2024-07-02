@@ -5,7 +5,7 @@ from D2Shared.shared.schemas.config_user import (
     ReadConfigUserSchema,
     UpdateConfigUserSchema,
 )
-from src.models.user import ConfigUser, RangeHourPlayTime, RangeTime
+from src.models.user import ConfigUser, RangeHourPlayTime, RangeWait
 from src.queries.utils import get_or_create
 from src.security.auth import login_for_admin
 
@@ -34,13 +34,13 @@ def update_config_user(
 
     # wait new map
     range_new_map_instance = get_or_create(
-        session, RangeTime, **config_user_schema.range_new_map.model_dump()
+        session, RangeWait, **config_user_schema.range_new_map.model_dump()
     )[0]
     config_user_instance.range_new_map = range_new_map_instance
 
     # wait
     range_wait_instance = get_or_create(
-        session, RangeTime, **config_user_schema.range_wait.model_dump()
+        session, RangeWait, **config_user_schema.range_wait.model_dump()
     )[0]
     config_user_instance.range_wait = range_wait_instance
 

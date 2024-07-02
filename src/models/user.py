@@ -25,15 +25,13 @@ class RangeHourPlayTime(Base):
     )
 
 
-class RangeTime(Base):
+class RangeWait(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
-    start_time = Column(Time, nullable=False)
-    end_time = Column(Time, nullable=False)
+    start: Mapped[float] = mapped_column(nullable=False)
+    end: Mapped[float] = mapped_column(nullable=False)
 
     __table_args__ = (
-        CheckConstraint(
-            "end_time > start_time", name="check_end_time_greater_than_start_time"
-        ),
+        CheckConstraint("end > start", name="check_end_greater_than_start"),
     )
 
 
@@ -42,7 +40,7 @@ class ConfigUser(Base):
     ranges_hour_playtime: Mapped[list[RangeHourPlayTime]] = relationship(
         back_populates="config_user"
     )
-    afk_time_at_start = Column(Time, default=None, nullable=True)
+    afk_time_at_start = Column(Time, default=time())
     time_between_sentence = Column(Time, default=time(minute=30))
     time_fighter = Column(Time, default=time(hour=1))
     time_harvester = Column(Time, default=time(hour=4))
@@ -53,12 +51,12 @@ class ConfigUser(Base):
     range_new_map_id: Mapped[int] = mapped_column(
         ForeignKey("range_time.id"), nullable=False
     )
-    range_new_map: Mapped[RangeTime] = relationship(foreign_keys=[range_new_map_id])
+    range_new_map: Mapped[RangeWait] = relationship(foreign_keys=[range_new_map_id])
 
     range_wait_id: Mapped[int] = mapped_column(
         ForeignKey("range_time.id"), nullable=False
     )
-    range_wait: Mapped[RangeTime] = relationship(foreign_keys=[range_wait_id])
+    range_wait: Mapped[RangeWait] = relationship(foreign_keys=[range_wait_id])
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
 
