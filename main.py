@@ -11,7 +11,8 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 
-from src.database import run_migrations
+from scripts.populate.extern.populate_extern import populate_extern
+from src.database import SessionMaker, run_migrations
 from src.routers import (
     user,
     breed,
@@ -29,13 +30,14 @@ from src.routers import (
     type_item,
     world,
     login,
+    config_user,
 )
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     run_migrations()
-    # populate_extern(SessionMaker())
+    populate_extern(SessionMaker())
     yield
 
 
@@ -71,6 +73,7 @@ app.include_router(type_item.router)
 app.include_router(world.router)
 app.include_router(template.router)
 app.include_router(login.router)
+app.include_router(config_user.router)
 
 
 def is_db_ready(host: str, port: int) -> bool:

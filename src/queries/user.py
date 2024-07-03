@@ -14,13 +14,6 @@ DEFAULT_RANGES_HOURS_PLAYTIME: list[tuple[time, time]] = [
 
 def populate_config(session: Session, user_id: int):
     """used at user creation"""
-    range_wait = get_or_create(
-        session,
-        RangeWait,
-        start=0.3,
-        end=0.7,
-        commit=False,
-    )[0]
     range_new_map = get_or_create(
         session,
         RangeWait,
@@ -29,9 +22,7 @@ def populate_config(session: Session, user_id: int):
         commit=False,
     )[0]
 
-    config_user = ConfigUser(
-        range_wait=range_wait, range_new_map=range_new_map, user_id=user_id
-    )
+    config_user = ConfigUser(range_new_map=range_new_map, user_id=user_id)
     session.add(config_user)
     session.commit()
 

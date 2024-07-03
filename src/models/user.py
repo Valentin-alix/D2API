@@ -32,6 +32,7 @@ class RangeWait(Base):
 
     __table_args__ = (
         CheckConstraint('"end" > start', name="check_end_greater_than_start"),
+        CheckConstraint("start >= 0", name="positive start"),
     )
 
 
@@ -53,12 +54,14 @@ class ConfigUser(Base):
     )
     range_new_map: Mapped[RangeWait] = relationship(foreign_keys=[range_new_map_id])
 
-    range_wait_id: Mapped[int] = mapped_column(
-        ForeignKey("range_wait.id"), nullable=False
-    )
-    range_wait: Mapped[RangeWait] = relationship(foreign_keys=[range_wait_id])
-
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+
+    __table_args__ = (
+        CheckConstraint(
+            "randomizer_duration_activity >= 0 and randomizer_duration_activity <= 1",
+            name="coherent randomizer_duration_activity",
+        ),
+    )
 
 
 class User(Base):
