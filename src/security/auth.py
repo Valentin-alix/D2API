@@ -14,7 +14,7 @@ security = HTTPBasic()
 def login(
     credentials: Annotated[HTTPBasicCredentials, Depends(security)],
     session: Session = Depends(session_local),
-):
+) -> User:
     user = session.query(User).filter(User.email == credentials.username).first()
     if user is None:
         raise HTTPException(status_code=401, detail="Incorrect username")

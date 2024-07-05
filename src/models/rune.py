@@ -4,6 +4,7 @@ from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
+from src.models.equipment import Equipment
 
 
 class Stat(Base):
@@ -41,9 +42,3 @@ class Line(Base):
     __table_args__ = (
         UniqueConstraint("stat_id", "equipment_id", name="unique stat for equipment"),
     )
-
-
-class Equipment(Base):
-    id: Mapped[int] = mapped_column(primary_key=True)
-    label: Mapped[str] = mapped_column(nullable=False, unique=True)
-    lines: Mapped[list[Line]] = relationship(back_populates="equipment")
