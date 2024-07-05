@@ -11,7 +11,7 @@ def init_runes(session: Session):
     print("importing runes...")
     if session.query(Stat).first() is not None:
         return
-    with open(RUNES_JSON_PATH) as file:
+    with open(RUNES_JSON_PATH, encoding="utf-8") as file:
         stats = json.load(file)
         stats_instance: list[Stat] = []
         runes_instance: list[Rune] = []
