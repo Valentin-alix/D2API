@@ -38,6 +38,10 @@ class Line(Base):
     stat_id: Mapped[int] = mapped_column(ForeignKey("stat.id"), nullable=False)
     stat: Mapped[Stat] = relationship()
 
+    __table_args__ = (
+        UniqueConstraint("stat_id", "equipment_id", name="unique stat for equipment"),
+    )
+
 
 class Equipment(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
