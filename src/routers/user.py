@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from D2Shared.shared.schemas.user import CreateUserSchema, ReadUserSchema
 from src.models.user import User
 from dateutil.relativedelta import relativedelta
+from src.queries.user import populate_config_user
 from src.security.auth import login, login_for_admin
 
 router = APIRouter(prefix="/users")
@@ -26,4 +27,5 @@ def create_user(
     )
     session.add(user)
     session.commit()
+    populate_config_user(session, user.id)
     return user

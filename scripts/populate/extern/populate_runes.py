@@ -3,7 +3,7 @@ import json
 from sqlalchemy.orm import Session
 from tqdm import tqdm
 
-from scripts.populate.dofus.consts import RUNES_JSON_PATH
+from scripts.populate.extern.consts import RUNES_JSON_PATH
 from src.models.rune import Rune, Stat
 
 
@@ -21,7 +21,9 @@ def init_runes(session: Session):
             for rune in stat["runes"]:
                 runes_instance.append(
                     Rune(
-                        quantity=rune["quantity"], name=rune["name"], stat=stat_instance
+                        stat_quantity=rune["quantity"],
+                        name=rune["name"],
+                        stat=stat_instance,
                     )
                 )
     session.add_all(stats_instance)

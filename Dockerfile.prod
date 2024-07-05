@@ -13,6 +13,9 @@ COPY ./.env ./.env
 COPY ./main.py ./main.py
 COPY ./D2Shared ./D2Shared
 COPY ./scripts/populate/extern ./scripts/populate/extern
+COPY ./resources/runes.json ./resources/runes.json
+COPY ./scripts/entrypoint.sh ./scripts/entrypoint.sh
+RUN chmod +x ./scripts/entrypoint.sh
 
 RUN pip install poetry==1.8.3
 
@@ -20,4 +23,4 @@ RUN poetry run poetry install --without dev
 
 EXPOSE 8000
 
-ENTRYPOINT ["poetry", "run", "uvicorn","--workers", "1", "--host", "0.0.0.0", "main:app" ]
+ENTRYPOINT ["./scripts/entrypoint.sh"]

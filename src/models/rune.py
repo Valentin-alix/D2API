@@ -12,19 +12,19 @@ class Stat(Base):
     weight: Mapped[float] = mapped_column(nullable=False)
     runes: Mapped[list[Rune]] = relationship(back_populates="stat")
 
-    __table_args__ = (CheckConstraint("weight>=0", name="check positive weight"),)
+    __table_args__ = (CheckConstraint("weight>0", name="check positive weight"),)
 
 
 class Rune(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
-    quantity: Mapped[int] = mapped_column(nullable=False)
     name: Mapped[str] = mapped_column(nullable=False)
     stat_id: Mapped[int] = mapped_column(ForeignKey("stat.id"), nullable=False)
     stat: Mapped[Stat] = relationship(back_populates="runes")
+    stat_quantity: Mapped[int] = mapped_column(nullable=False)
 
     __table_args__ = (
-        UniqueConstraint("name", "quantity", name="unique name with quantity"),
-        CheckConstraint("quantity>=0", name="check positive quantity"),
+        UniqueConstraint("name", "stat_quantity", name="unique name with quantity"),
+        CheckConstraint("stat_quantity>0", name="check positive quantity"),
     )
 
 

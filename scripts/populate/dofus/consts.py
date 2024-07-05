@@ -38,9 +38,6 @@ DLM_FOLDER = os.path.join(PYDOFUS_OUTPUT_FOLDER, "dlm")
 
 AVG_PRICES_FOLDER = os.path.join(PYDOFUS_OUTPUT_FOLDER, "dat")
 
-RUNES_JSON_PATH = os.path.join(
-    Path(__file__).parent.parent.parent.parent, "resources", "runes.json"
-)
 COLLECTABLES_MAP_PATH = os.path.join(
     Path(__file__).parent.parent.parent.parent, "resources", "collectables.json"
 )

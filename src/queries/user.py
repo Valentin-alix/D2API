@@ -12,7 +12,7 @@ DEFAULT_RANGES_HOURS_PLAYTIME: list[tuple[time, time]] = [
 ]
 
 
-def populate_config(session: Session, user_id: int):
+def populate_config_user(session: Session, user_id: int):
     """used at user creation"""
     range_new_map = get_or_create(
         session,

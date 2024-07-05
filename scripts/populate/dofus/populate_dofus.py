@@ -38,7 +38,6 @@ from scripts.populate.dofus.populate_maps import (
 from scripts.populate.dofus.populate_recipes import (
     init_recipes,
 )
-from scripts.populate.dofus.populate_runes import init_runes
 from scripts.populate.dofus.populate_spells import (
     init_breed,
     init_effects_spell,
@@ -78,7 +77,6 @@ async def init_bdd():
         init_spell_levels(session)
         init_spell_lvl_index(session)
         init_prices_and_servers(session)
-        init_runes(session)
         await init_collectables(session)
 
 
