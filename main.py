@@ -30,6 +30,7 @@ from src.routers import (
     login,
     config_user,
     stat,
+    equipment,
 )
 
 
@@ -72,6 +73,7 @@ app.include_router(template.router)
 app.include_router(login.router)
 app.include_router(config_user.router)
 app.include_router(stat.router)
+app.include_router(equipment.router)
 
 
 def is_db_ready(host: str, port: int) -> bool:
