@@ -9,7 +9,7 @@ from src.models.user import User
 from src.queries.utils import get_or_create
 from src.security.auth import login
 
-router = APIRouter(prefix="/equipment", dependencies=[Depends(login)])
+router = APIRouter(prefix="/equipment")
 
 
 @router.post("/", response_model=ReadEquipmentSchema)
@@ -18,19 +18,22 @@ def create_equipment(
     session: Session = Depends(session_local),
     user: User = Depends(login),
 ):
-    equipment = Equipment(label=equipment_datas.label)
+    equipment = Equipment(label=equipment_datas.label, user_id=user.id)
     session.add(equipment)
     session.flush()
 
     line_instances: list[Line] = []
     for line_schema in equipment_datas.lines:
+        line_datas: dict = {
+            "stat_id": line_schema.stat_id,
+            "value": line_schema.value,
+            "equipment_id": equipment.id,
+        }
         line = get_or_create(
-            session,
-            Line,
-            False,
-            **line_schema.model_dump(),
-            equipment_id=equipment.id,
-            user_id=user.id,
+            session=session,
+            model=Line,
+            commit=False,
+            **line_datas,
         )[0]
         line_instances.append(line)
 
@@ -51,14 +54,12 @@ def update_equipment(
 
     line_instances: list[Line] = []
     for line_schema in equipment_datas.lines:
-        line = get_or_create(
-            session,
-            Line,
-            False,
-            **line_schema.model_dump(),
-            equipment_id=equipment_id,
-            user_id=user.id,
-        )[0]
+        line_datas: dict = {
+            "stat_id": line_schema.stat_id,
+            "value": line_schema.value,
+            "equipment_id": equipment.id,
+        }
+        line = get_or_create(session, Line, False, **line_datas)[0]
         line_instances.append(line)
 
     equipment.label = equipment_datas.label

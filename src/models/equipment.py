@@ -13,7 +13,9 @@ class Equipment(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     label: Mapped[str] = mapped_column(nullable=False)
     user_id: Mapped[int] = mapped_column(nullable=False)
-    lines: Mapped[list["Line"]] = relationship(back_populates="equipment")
+    lines: Mapped[list["Line"]] = relationship(
+        back_populates="equipment", cascade="all, delete-orphan"
+    )
 
     __table_args__ = (
         UniqueConstraint("label", "user_id", name="unique label for user"),

@@ -33,7 +33,7 @@ class Line(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     value: Mapped[int] = mapped_column(nullable=False)
     equipment_id: Mapped[int] = mapped_column(
-        ForeignKey("equipment.id"), nullable=False
+        ForeignKey("equipment.id", ondelete="CASCADE"), nullable=False
     )
     equipment: Mapped[Equipment] = relationship(back_populates="lines")
     stat_id: Mapped[int] = mapped_column(ForeignKey("stat.id"), nullable=False)
