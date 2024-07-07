@@ -1,6 +1,8 @@
 import json
+
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
+
 from D2Shared.shared.schemas.config_user import (
     ReadConfigUserSchema,
     UpdateConfigUserSchema,
@@ -24,20 +26,22 @@ async def update_config_user(
     config_user_instance: ConfigUser = session.get_one(ConfigUser, config_user_id)
 
     # playtimes
-    range_hour_playtime_instances: list[RangeHourPlayTime] = [
-        get_or_create(
-            session,
-            RangeHourPlayTime,
-            **elem.model_dump(),
-            config_user_id=config_user_id,
-        )[0]
-        for elem in config_user_schema.ranges_hour_playtime
-    ]
-    config_user_instance.ranges_hour_playtime = range_hour_playtime_instances
-
+    ranges_hour_playtime: list[RangeHourPlayTime] = []
+    for elem in config_user_schema.ranges_hour_playtime:
+        ranges_hour_playtime.append(
+            get_or_create(
+                session,
+                RangeHourPlayTime,
+                **elem.model_dump(),
+                config_user_id=config_user_id,
+            )[0]
+        )
+    config_user_instance.ranges_hour_playtime = ranges_hour_playtime
     # wait new map
     range_new_map_instance = get_or_create(
-        session, RangeWait, **config_user_schema.range_new_map.model_dump()
+        session,
+        RangeWait,
+        **config_user_schema.range_new_map.model_dump(),
     )[0]
     config_user_instance.range_new_map = range_new_map_instance
 

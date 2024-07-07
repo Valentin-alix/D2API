@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from datetime import datetime, time
 
 from sqlalchemy import CheckConstraint, Column, ForeignKey, Time
@@ -39,7 +40,7 @@ class RangeWait(Base):
 class ConfigUser(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     ranges_hour_playtime: Mapped[list[RangeHourPlayTime]] = relationship(
-        back_populates="config_user"
+        back_populates="config_user", cascade="all, delete-orphan"
     )
     afk_time_at_start = Column(Time, default=time())
     time_between_sentence = Column(Time, default=time(minute=30))
