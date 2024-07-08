@@ -4,8 +4,8 @@ from sqlalchemy.orm import Session
 from D2Shared.shared.schemas.item import ItemSchema
 from D2Shared.shared.schemas.sub_area import SubAreaSchema
 from src.database import session_local
-from src.models.collectable import Collectable
 from src.models.character import Character
+from src.models.collectable import Collectable
 from src.models.sub_area import SubArea
 from src.queries.sub_area import (
     get_dropable_items,
@@ -75,6 +75,7 @@ def valid_sub_areas_fighter(
 
 @router.get("/weights_harvest_map", response_model=dict[int, float])
 def weights_harvest_map(
+    character_id: str,
     server_id: int,
     possible_collectable_ids: list[int],
     valid_sub_area_ids: list[int],
@@ -88,8 +89,12 @@ def weights_harvest_map(
     valid_sub_areas = (
         session.query(SubArea).filter(SubArea.id.in_(valid_sub_area_ids)).all()
     )
+    character = session.get_one(Character, character_id)
+    weight_by_job_ids = {
+        elem.job_id: elem.weight for elem in character.harvest_jobs_infos
+    }
     return get_weights_harvest_map(
-        session, server_id, possible_collectables, valid_sub_areas
+        session, server_id, possible_collectables, valid_sub_areas, weight_by_job_ids
     )
 
 

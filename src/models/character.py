@@ -12,11 +12,11 @@ from sqlalchemy.orm import (
 from D2Shared.shared.consts.jobs import HARVEST_JOBS_ID
 from D2Shared.shared.enums import BreedEnum, ElemEnum
 from src.models.base import Base
+from src.models.breed import Breed
 from src.models.item import Item
 from src.models.job import Job
-from src.models.waypoint import Waypoint
 from src.models.server import Server
-from src.models.breed import Breed
+from src.models.waypoint import Waypoint
 
 character_waypoint_association = Table(
     "character_waypoint_association",
@@ -41,6 +41,7 @@ class CharacterJobInfo(Base):
     job: Mapped["Job"] = relationship()
 
     lvl: Mapped[int] = mapped_column(nullable=False, default=1)
+    weight: Mapped[float] = mapped_column(nullable=False, default=1)
 
     __table_args__ = (
         CheckConstraint("lvl>=1 AND lvl<=200", name="check legit character job lvl"),

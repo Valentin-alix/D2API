@@ -42,6 +42,7 @@ def update_job_info(
     character_id: str,
     job_id: int,
     lvl: int,
+    weight: float | None = None,
     session: Session = Depends(session_local),
 ):
     job_info = (
@@ -53,6 +54,8 @@ def update_job_info(
         .one()
     )
     job_info.lvl = lvl
+    if weight is not None:
+        job_info.weight = weight
     session.commit()
     return job_info
 

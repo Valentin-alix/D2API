@@ -4,19 +4,19 @@ import random
 from sqlalchemy import case, func
 from sqlalchemy.orm import Session, aliased, joinedload
 
-from D2Shared.shared.enums import AreaEnum, JobEnum
+from D2Shared.shared.enums import AreaEnum
 from D2Shared.shared.utils.debugger import timeit
-from src.models.collectable import Collectable, CollectableMapInfo
+from src.models.area import Area
 from src.models.character import Character
+from src.models.collectable import Collectable, CollectableMapInfo
 from src.models.drop import Drop
 from src.models.item import Item
 from src.models.job import Job
-from src.models.monster import Monster
-from src.models.area import Area
 from src.models.map import Map
 from src.models.map_direction import MapDirection
-from src.models.sub_area import SubArea
+from src.models.monster import Monster
 from src.models.price import Price
+from src.models.sub_area import SubArea
 from src.queries.monster import get_monster_res_filter_elem
 
 
@@ -138,20 +138,12 @@ def get_valid_sub_areas_fighter(
 STOP_JOB_LVL_AREA_FARM: dict[int, int] = {AreaEnum.INCARNAM: 20}
 
 
-WEIGHT_BY_JOB: dict[JobEnum, float] = {
-    JobEnum.ALCHIMIST: 5,
-    JobEnum.WOODCUTTER: 10,
-    JobEnum.PEASANT: 3,
-    JobEnum.FISHERMAN: 3,
-}
-
-
-@timeit
 def get_weights_harvest_map(
     session: Session,
     server_id: int,
     possible_collectables: list[Collectable],
     valid_sub_areas: list[SubArea],
+    weight_by_job: dict[int, float],
 ) -> dict[int, float]:
     """get weight by all maps based on COLLECTABLE_BY_MAPS_WITH_COUNT and jobs_level
 
@@ -167,7 +159,7 @@ def get_weights_harvest_map(
         collectable.id for collectable in possible_collectables
     ]
     weight_by_job_case = case(
-        *[(Job.name == job_name, weight) for job_name, weight in WEIGHT_BY_JOB.items()],
+        *[(Job.id == job_id, weight) for job_id, weight in weight_by_job.items()],
         else_=0,
     )
     valid_sub_areas_ids: list[int] = [sub_area.id for sub_area in valid_sub_areas]
@@ -194,6 +186,7 @@ def get_weights_harvest_map(
         .group_by(Map.id)
         .all()
     ):
+        map: Map
         weight_maps[map.id] = max(map_collectables_value, 1)
 
     return weight_maps
