@@ -41,7 +41,7 @@ class CharacterJobInfo(Base):
     job: Mapped["Job"] = relationship()
 
     lvl: Mapped[int] = mapped_column(nullable=False, default=1)
-    weight: Mapped[float] = mapped_column(nullable=False, default=1)
+    weight: Mapped[float] = mapped_column(default=1)
 
     __table_args__ = (
         CheckConstraint("lvl>=1 AND lvl<=200", name="check legit character job lvl"),
