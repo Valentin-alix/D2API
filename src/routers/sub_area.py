@@ -6,6 +6,7 @@ from D2Shared.shared.schemas.sub_area import SubAreaSchema
 from src.database import session_local
 from src.models.character import Character
 from src.models.collectable import Collectable
+from src.models.map import Map
 from src.models.sub_area import SubArea
 from src.queries.sub_area import (
     get_dropable_items,
@@ -20,6 +21,19 @@ from src.queries.sub_area import (
 from src.security.auth import login
 
 router = APIRouter(prefix="/sub_area", dependencies=[Depends(login)])
+
+
+@router.get("/", response_model=list[SubAreaSchema])
+def get_sub_areas(
+    session: Session = Depends(session_local),
+):
+    sub_areas = (
+        session.query(SubArea)
+        .join(Map, Map.sub_area_id == SubArea.id)
+        .filter(Map.world_id == 1)
+        .all()
+    )
+    return sub_areas
 
 
 @router.get("/random_grouped_sub_area/", response_model=list[SubAreaSchema])

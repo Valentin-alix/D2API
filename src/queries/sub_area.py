@@ -109,8 +109,9 @@ def get_valid_sub_areas_fighter(
     Returns:
         list[SubArea]: valid sub areas
     """
+    char_sub_area_ids = [elem.id for elem in character.sub_areas]
     query = session.query(SubArea).filter(
-        SubArea.is_farmable, SubArea.level <= character.lvl
+        SubArea.id.in_(char_sub_area_ids), SubArea.level <= character.lvl
     )
     if not character.is_sub:
         query = query.join(Area, SubArea.area_id == Area.id).filter(
@@ -200,19 +201,20 @@ def get_valid_sub_areas_harvester(
     Returns:
         list[SubArea]: valid sub areas
     """
+    char_sub_area_ids = [elem.id for elem in character.sub_areas]
     if not character.is_sub:
         query = (
             session.query(SubArea)
             .join(Area, SubArea.area_id == Area.id)
             .filter(
-                SubArea.is_farmable,
+                SubArea.id.in_(char_sub_area_ids),
                 SubArea.is_not_aggressive(character.lvl),
                 ~Area.is_for_sub,
             )
         )
     else:
         query = session.query(SubArea).filter(
-            SubArea.is_farmable,
+            SubArea.id.in_(char_sub_area_ids),
             SubArea.is_not_aggressive(character.lvl),
         )
 

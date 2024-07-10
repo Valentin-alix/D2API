@@ -16,6 +16,7 @@ from src.models.breed import Breed
 from src.models.item import Item
 from src.models.job import Job
 from src.models.server import Server
+from src.models.sub_area import SubArea
 from src.models.waypoint import Waypoint
 
 character_waypoint_association = Table(
@@ -30,6 +31,13 @@ character_items_association = Table(
     Base.metadata,
     Column("character_id", ForeignKey("character.id", ondelete="CASCADE")),
     Column("item_id", ForeignKey("item.id")),
+)
+
+character_sub_areas_association = Table(
+    "character_sub_areas_association",
+    Base.metadata,
+    Column("character_id", ForeignKey("character.id", ondelete="CASCADE")),
+    Column("sub_area_id", ForeignKey("sub_area.id")),
 )
 
 
@@ -54,6 +62,9 @@ class Character(Base):
     character_job_info: Mapped[List["CharacterJobInfo"]] = relationship()
     waypoints: Mapped[List["Waypoint"]] = relationship(
         secondary=character_waypoint_association
+    )
+    sub_areas: Mapped[List["SubArea"]] = relationship(
+        secondary=character_sub_areas_association
     )
     po_bonus: Mapped[int] = mapped_column(nullable=False, default=0)
     is_sub: Mapped[bool] = mapped_column(nullable=False, default=False)

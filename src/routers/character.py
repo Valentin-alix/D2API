@@ -7,15 +7,18 @@ from D2Shared.shared.schemas.character import (
 )
 from D2Shared.shared.schemas.collectable import CollectableSchema
 from D2Shared.shared.schemas.item import ItemSchema
+from D2Shared.shared.schemas.sub_area import SubAreaSchema
 from D2Shared.shared.schemas.waypoint import WaypointSchema
 from src.database import session_local
 from src.models.character import Character, CharacterJobInfo
 from src.models.item import Item
+from src.models.sub_area import SubArea
 from src.models.waypoint import Waypoint
 from src.queries.character import (
     get_max_pods_character,
     get_possible_collectable,
     populate_job_info,
+    populate_sub_areas,
 )
 from src.queries.utils import get_or_create
 from src.security.auth import login
@@ -95,6 +98,30 @@ def add_waypoint(
     session.commit()
 
 
+@router.put("/{character_id}/waypoints")
+def update_waypoints(
+    character_id: str,
+    waypoint_ids: list[int],
+    session: Session = Depends(session_local),
+):
+    character = session.get_one(Character, character_id)
+    waypoints = session.query(Waypoint).filter(Waypoint.id.in_(waypoint_ids)).all()
+    character.waypoints = waypoints
+    session.commit()
+
+
+@router.put("/{character_id}/sub_areas")
+def update_sub_areas(
+    character_id: str,
+    sub_area_ids: list[int],
+    session: Session = Depends(session_local),
+):
+    character = session.get_one(Character, character_id)
+    sub_areas = session.query(SubArea).filter(SubArea.id.in_(sub_area_ids)).all()
+    character.sub_areas = sub_areas
+    session.commit()
+
+
 @router.post("/{character_id}/bank_items")
 def add_bank_items(
     character_id: str,
@@ -130,6 +157,15 @@ def get_waypoints(
     return character.waypoints
 
 
+@router.get("/{character_id}/sub_areas", response_model=list[SubAreaSchema])
+def get_sub_areas(
+    character_id: str,
+    session: Session = Depends(session_local),
+):
+    character = session.get_one(Character, character_id)
+    return character.sub_areas
+
+
 @router.get("/{character_id}/bank_items", response_model=list[ItemSchema])
 def get_bank_items(
     character_id: str,
@@ -163,4 +199,5 @@ def get_or_create_character(
     )
     if is_created:
         populate_job_info(session, character.id)
+        populate_sub_areas(session, character)
     return character

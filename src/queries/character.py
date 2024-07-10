@@ -1,10 +1,12 @@
 from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
-from src.models.collectable import Collectable
+from D2Shared.shared.consts.areas import FARMABLE_SUB_AREAS
 from src.models.character import Character, CharacterJobInfo
+from src.models.collectable import Collectable
 from src.models.item import Item
 from src.models.job import Job
+from src.models.sub_area import SubArea
 
 
 def populate_job_info(session: Session, character_id: str):
@@ -13,6 +15,14 @@ def populate_job_info(session: Session, character_id: str):
     for job in session.query(Job).all():
         job_infos.append(CharacterJobInfo(job_id=job.id, character_id=character_id))
     session.add_all(job_infos)
+    session.commit()
+
+
+def populate_sub_areas(session: Session, character: Character):
+    """used at character creation"""
+    character.sub_areas = (
+        session.query(SubArea).filter(SubArea.id.in_(FARMABLE_SUB_AREAS)).all()
+    )
     session.commit()
 
 

@@ -1,17 +1,17 @@
 from typing import TYPE_CHECKING, Any, List
 
 from sqlalchemy import ForeignKey, UniqueConstraint
-from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
+from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
     relationship,
 )
 
-from D2Shared.shared.consts.areas import AGRESSIVE_LIMIT, FARMABLE_SUB_AREAS
+from D2Shared.shared.consts.areas import AGRESSIVE_LIMIT
+from src.models.area import Area
 from src.models.base import Base
 from src.models.monster import Monster, monster_sub_area_association
-from src.models.area import Area
 
 if TYPE_CHECKING:
     from src.models.map import Map
@@ -44,14 +44,6 @@ class SubArea(Base):
 
     def __hash__(self) -> int:
         return self.id.__hash__()
-
-    @hybrid_property
-    def is_farmable(self) -> bool:  # type: ignore
-        return self.id in FARMABLE_SUB_AREAS
-
-    @is_farmable.expression
-    def is_farmable(cls):
-        return cls.id.in_(FARMABLE_SUB_AREAS)  # type: ignore
 
     @hybrid_method
     def is_not_aggressive(self, character_lvl: int) -> bool:
