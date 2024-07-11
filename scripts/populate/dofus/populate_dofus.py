@@ -13,9 +13,6 @@ from scripts.populate.dofus.populate_areas import (
     init_areas,
     init_sub_areas,
 )
-from scripts.populate.dofus.populate_characteristic import (
-    init_characteristics,
-)
 from scripts.populate.dofus.populate_collectable import (
     init_collectables,
 )
@@ -37,13 +34,6 @@ from scripts.populate.dofus.populate_maps import (
 )
 from scripts.populate.dofus.populate_recipes import (
     init_recipes,
-)
-from scripts.populate.dofus.populate_spells import (
-    init_breed,
-    init_effects_spell,
-    init_spell_levels,
-    init_spell_lvl_index,
-    init_spells_and_variant,
 )
 from src.database import ENGINE, SessionMaker, run_migrations
 from src.models.base import Base
@@ -70,12 +60,6 @@ async def init_bdd():
         init_map(session)
         init_waypoint(session)
         init_map_directions(session)
-        init_characteristics(session, d2i_texts)
-        init_breed(session, d2i_texts)
-        init_effects_spell(session, d2i_texts)
-        init_spells_and_variant(session, d2i_texts)
-        init_spell_levels(session)
-        init_spell_lvl_index(session)
         init_prices_and_servers(session)
         await init_collectables(session)
 

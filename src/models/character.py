@@ -10,12 +10,12 @@ from sqlalchemy.orm import (
 )
 
 from D2Shared.shared.consts.jobs import HARVEST_JOBS_ID
-from D2Shared.shared.enums import BreedEnum, ElemEnum
+from D2Shared.shared.enums import ElemEnum
 from src.models.base import Base
-from src.models.breed import Breed
 from src.models.item import Item
 from src.models.job import Job
 from src.models.server import Server
+from src.models.spell import Spell
 from src.models.sub_area import SubArea
 from src.models.waypoint import Waypoint
 
@@ -69,10 +69,6 @@ class Character(Base):
     po_bonus: Mapped[int] = mapped_column(nullable=False, default=0)
     is_sub: Mapped[bool] = mapped_column(nullable=False, default=False)
     time_spent: Mapped[float] = mapped_column(default=0)
-    breed_id: Mapped[int] = mapped_column(
-        ForeignKey("breed.id"), nullable=False, default=BreedEnum.ENI
-    )
-    breed: Mapped[Breed] = relationship()
     elem: Mapped[ElemEnum] = mapped_column(default=ElemEnum.ELEMENT_WATER)
     server_id: Mapped[int] = mapped_column(ForeignKey("server.id"), nullable=False)
     server: Mapped[Server] = relationship()
@@ -80,6 +76,7 @@ class Character(Base):
     bank_items: Mapped[List["Item"]] = relationship(
         secondary=character_items_association
     )
+    spells: Mapped[List["Spell"]] = relationship()
 
     __table_args__ = (
         CheckConstraint("lvl>=1 AND lvl<=200", name="check legit character lvl"),

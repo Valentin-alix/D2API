@@ -7,11 +7,13 @@ from D2Shared.shared.schemas.character import (
 )
 from D2Shared.shared.schemas.collectable import CollectableSchema
 from D2Shared.shared.schemas.item import ItemSchema
+from D2Shared.shared.schemas.spell_lvl import SpellSchema
 from D2Shared.shared.schemas.sub_area import SubAreaSchema
 from D2Shared.shared.schemas.waypoint import WaypointSchema
 from src.database import session_local
 from src.models.character import Character, CharacterJobInfo
 from src.models.item import Item
+from src.models.spell import Spell
 from src.models.sub_area import SubArea
 from src.models.waypoint import Waypoint
 from src.queries.character import (
@@ -107,6 +109,29 @@ def update_waypoints(
     character = session.get_one(Character, character_id)
     waypoints = session.query(Waypoint).filter(Waypoint.id.in_(waypoint_ids)).all()
     character.waypoints = waypoints
+    session.commit()
+
+
+@router.put("/{character_id}/spells")
+def update_spells(
+    character_id: str,
+    spells_data: list[SpellSchema],
+    session: Session = Depends(session_local),
+):
+    character = session.get_one(Character, character_id)
+    related_spells: list[Spell] = []
+    for spell_data in spells_data:
+        related_spell = get_or_create(
+            session,
+            Spell,
+            commit=False,
+            character_id=spell_data.character_id,
+            index=spell_data.index,
+        )[0]
+        for key, value in spell_data.model_dump(exclude_unset=True).items():
+            setattr(related_spell, key, value)
+        related_spells.append(related_spell)
+    character.spells = related_spells
     session.commit()
 
 

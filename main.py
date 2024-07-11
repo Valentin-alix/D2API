@@ -1,41 +1,42 @@
 import logging
 import os
-from contextlib import asynccontextmanager
-from pathlib import Path
 import socket
 import sys
+from contextlib import asynccontextmanager
+from pathlib import Path
 from time import sleep
 
 import uvicorn
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-
+from scripts.populate.extern.populate_extern import populate_extern
+from src.database import SessionMaker
 from src.routers import (
-    user,
-    breed,
     character,
     collectable,
+    config_user,
+    equipment,
     item,
     job,
+    login,
     map,
     price,
     recipe,
     server,
     spell,
+    stat,
     sub_area,
     template,
     type_item,
+    user,
     world,
-    login,
-    config_user,
-    stat,
-    equipment,
 )
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    populate_extern(SessionMaker())
     yield
 
 
@@ -57,7 +58,6 @@ app.add_middleware(
 )
 app.include_router(user.router)
 app.include_router(character.router)
-app.include_router(breed.router)
 app.include_router(collectable.router)
 app.include_router(item.router)
 app.include_router(job.router)

@@ -20,8 +20,5 @@ from .map import *
 from .type_item import *
 from .item import *
 
-from .characteristic import *
 from .spell import *
-from .breed import *
-from .effect import *
 from .user import *
