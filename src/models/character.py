@@ -76,7 +76,7 @@ class Character(Base):
     bank_items: Mapped[List["Item"]] = relationship(
         secondary=character_items_association
     )
-    spells: Mapped[List["Spell"]] = relationship()
+    spells: Mapped[List["Spell"]] = relationship(cascade="all, delete-orphan")
 
     __table_args__ = (
         CheckConstraint("lvl>=1 AND lvl<=200", name="check legit character lvl"),
@@ -89,6 +89,20 @@ class Character(Base):
 
     def __repr__(self) -> str:
         return self.__str__()
+
+    @property
+    def max_pods(self):
+        BASE_PODS = 1000
+
+        sum_job_lvls = sum((elem.lvl for elem in self.character_job_info))
+        bonus_pods = 0
+        pod_by_lvl = 12
+        for _ in range(200, sum_job_lvls, 200):
+            bonus_pods += 200 * pod_by_lvl
+            pod_by_lvl = max(pod_by_lvl - 1, 1)
+        bonus_pods += (sum_job_lvls % 200) * pod_by_lvl
+
+        return BASE_PODS + self.lvl * 5 + bonus_pods
 
     @property
     def harvest_jobs_infos(self) -> list[CharacterJobInfo]:

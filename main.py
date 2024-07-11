@@ -10,8 +10,6 @@ import uvicorn
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from scripts.populate.extern.populate_extern import populate_extern
-from src.database import SessionMaker
 from src.routers import (
     character,
     collectable,
@@ -36,7 +34,6 @@ from src.routers import (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    populate_extern(SessionMaker())
     yield
 
 

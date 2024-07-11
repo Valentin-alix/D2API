@@ -8,7 +8,7 @@ from src.models.base import Base
 
 
 class Spell(Base):
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
     character_id: Mapped[int] = mapped_column(
         ForeignKey("character.id", ondelete="CASCADE"), nullable=False

@@ -30,7 +30,7 @@ def get_sub_areas(
     sub_areas = (
         session.query(SubArea)
         .join(Map, Map.sub_area_id == SubArea.id)
-        .filter(Map.world_id == 1)
+        .filter(Map.world_id.in_([1, 2]))
         .all()
     )
     return sub_areas

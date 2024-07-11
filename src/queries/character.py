@@ -1,4 +1,4 @@
-from sqlalchemy import case, func
+from sqlalchemy import case
 from sqlalchemy.orm import Session
 
 from D2Shared.shared.consts.areas import FARMABLE_SUB_AREAS
@@ -48,24 +48,3 @@ def get_possible_collectable(
     )
 
     return possible_collectables
-
-
-def get_max_pods_character(session: Session, character_id: str) -> int:
-    BASE_PODS = 1000
-
-    levels_job_with_lvl = (
-        session.query(func.sum(CharacterJobInfo.lvl), Character.lvl)
-        .join(Character, Character.id == CharacterJobInfo.character_id)
-        .filter(CharacterJobInfo.character_id == character_id)
-        .group_by(Character.lvl)
-        .one()
-    )
-    sum_job_lvls, lvl = levels_job_with_lvl
-    bonus_pods = 0
-    pod_by_lvl = 12
-    for _ in range(200, sum_job_lvls, 200):
-        bonus_pods += 200 * pod_by_lvl
-        pod_by_lvl = max(pod_by_lvl - 1, 1)
-    bonus_pods += (sum_job_lvls % 200) * pod_by_lvl
-
-    return BASE_PODS + lvl * 5 + bonus_pods

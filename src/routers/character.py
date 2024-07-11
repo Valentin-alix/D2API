@@ -6,10 +6,7 @@ from D2Shared.shared.schemas.character import (
     CharacterSchema,
 )
 from D2Shared.shared.schemas.collectable import CollectableSchema
-from D2Shared.shared.schemas.item import ItemSchema
-from D2Shared.shared.schemas.spell_lvl import SpellSchema
-from D2Shared.shared.schemas.sub_area import SubAreaSchema
-from D2Shared.shared.schemas.waypoint import WaypointSchema
+from D2Shared.shared.schemas.spell import SpellSchema, UpdateSpellSchema
 from src.database import session_local
 from src.models.character import Character, CharacterJobInfo
 from src.models.item import Item
@@ -17,7 +14,6 @@ from src.models.spell import Spell
 from src.models.sub_area import SubArea
 from src.models.waypoint import Waypoint
 from src.queries.character import (
-    get_max_pods_character,
     get_possible_collectable,
     populate_job_info,
     populate_sub_areas,
@@ -42,61 +38,23 @@ def update_character(
     return character
 
 
-@router.put("/{character_id}/job_info", response_model=CharacterJobInfoSchema)
-def update_job_info(
+@router.put("/{character_id}/job_infos")
+def update_job_infos(
     character_id: str,
-    job_id: int,
-    lvl: int,
-    weight: float | None = None,
+    job_info_datas: list[CharacterJobInfoSchema],
     session: Session = Depends(session_local),
 ):
-    job_info = (
-        session.query(CharacterJobInfo)
-        .filter(
-            CharacterJobInfo.character_id == character_id,
-            CharacterJobInfo.job_id == job_id,
+    for job_info_data in job_info_datas:
+        job_info = (
+            session.query(CharacterJobInfo)
+            .filter(
+                CharacterJobInfo.character_id == character_id,
+                CharacterJobInfo.job_id == job_info_data.job_id,
+            )
+            .one()
         )
-        .one()
-    )
-    job_info.lvl = lvl
-    if weight is not None:
-        job_info.weight = weight
-    session.commit()
-    return job_info
-
-
-@router.get("/{character_id}/job_info", response_model=list[CharacterJobInfoSchema])
-def get_job_infos(
-    character_id: str,
-    session: Session = Depends(session_local),
-):
-    job_infos = (
-        session.query(CharacterJobInfo)
-        .filter(
-            CharacterJobInfo.character_id == character_id,
-        )
-        .all()
-    )
-    return job_infos
-
-
-@router.get("/{character_id}/max_pods", response_model=int)
-def get_max_pods(
-    character_id: str,
-    session: Session = Depends(session_local),
-):
-    return get_max_pods_character(session, character_id)
-
-
-@router.post("/{character_id}/waypoint")
-def add_waypoint(
-    character_id: str,
-    waypoint_id: int,
-    session: Session = Depends(session_local),
-):
-    character = session.get_one(Character, character_id)
-    waypoint = session.get_one(Waypoint, waypoint_id)
-    character.waypoints.append(waypoint)
+        job_info.lvl = job_info_data.lvl
+        job_info.weight = job_info_data.weight
     session.commit()
 
 
@@ -112,10 +70,10 @@ def update_waypoints(
     session.commit()
 
 
-@router.put("/{character_id}/spells")
+@router.put("/{character_id}/spells/", response_model=list[SpellSchema])
 def update_spells(
     character_id: str,
-    spells_data: list[SpellSchema],
+    spells_data: list[UpdateSpellSchema],
     session: Session = Depends(session_local),
 ):
     character = session.get_one(Character, character_id)
@@ -124,15 +82,17 @@ def update_spells(
         related_spell = get_or_create(
             session,
             Spell,
-            commit=False,
+            commit=True,
             character_id=spell_data.character_id,
             index=spell_data.index,
+            defaults=spell_data.model_dump(),
         )[0]
         for key, value in spell_data.model_dump(exclude_unset=True).items():
             setattr(related_spell, key, value)
         related_spells.append(related_spell)
     character.spells = related_spells
     session.commit()
+    return character.spells
 
 
 @router.put("/{character_id}/sub_areas")
@@ -171,33 +131,6 @@ def remove_bank_items(
         if item in character.bank_items:
             character.bank_items.remove(item)
     session.commit()
-
-
-@router.get("/{character_id}/waypoints", response_model=list[WaypointSchema])
-def get_waypoints(
-    character_id: str,
-    session: Session = Depends(session_local),
-):
-    character = session.get_one(Character, character_id)
-    return character.waypoints
-
-
-@router.get("/{character_id}/sub_areas", response_model=list[SubAreaSchema])
-def get_sub_areas(
-    character_id: str,
-    session: Session = Depends(session_local),
-):
-    character = session.get_one(Character, character_id)
-    return character.sub_areas
-
-
-@router.get("/{character_id}/bank_items", response_model=list[ItemSchema])
-def get_bank_items(
-    character_id: str,
-    session: Session = Depends(session_local),
-):
-    character = session.get_one(Character, character_id)
-    return character.bank_items
 
 
 @router.get(
