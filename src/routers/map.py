@@ -1,10 +1,11 @@
 import logging
+
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import ResponseValidationError
 from sqlalchemy.orm import Session
 
 from D2Shared.shared.enums import FromDirection
-from D2Shared.shared.schemas.map import MapSchema
+from D2Shared.shared.schemas.map import CoordinatesMapSchema, MapSchema
 from D2Shared.shared.schemas.map_direction import MapDirectionSchema
 from D2Shared.shared.schemas.map_with_action import MapWithActionSchema
 from src.database import session_local
@@ -35,12 +36,15 @@ def map(
 
 @router.get("/related/", response_model=MapSchema)
 def related_map(
-    x: int,
-    y: int,
-    world_id: int,
+    coordinate_map_schema: CoordinatesMapSchema,
     session: Session = Depends(session_local),
 ):
-    return get_related_map(session, x=x, y=y, world_id=world_id)
+    return get_related_map(
+        session,
+        x=coordinate_map_schema.x,
+        y=coordinate_map_schema.y,
+        world_id=coordinate_map_schema.world_id,
+    )
 
 
 @router.get("/find_path/", response_model=list[MapWithActionSchema] | None)

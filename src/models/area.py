@@ -1,7 +1,7 @@
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column
 
-from D2Shared.shared.consts.areas import UNSUB_REGIONS
+from D2Shared.shared.consts.areas import UNSUB_AREAS
 from src.models.base import Base
 
 
@@ -17,8 +17,8 @@ class Area(Base):
 
     @hybrid_property
     def is_for_sub(self) -> bool:  # type: ignore
-        return self.id not in UNSUB_REGIONS
+        return self.name not in UNSUB_AREAS
 
     @is_for_sub.expression
     def is_for_sub(cls):
-        return cls.id.not_in(UNSUB_REGIONS)  # type: ignore
+        return cls.name.not_in(UNSUB_AREAS)  # type: ignore

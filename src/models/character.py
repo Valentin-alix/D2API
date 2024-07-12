@@ -9,7 +9,7 @@ from sqlalchemy.orm import (
     relationship,
 )
 
-from D2Shared.shared.consts.jobs import HARVEST_JOBS_ID
+from D2Shared.shared.consts.jobs import HARVEST_JOBS_NAME
 from D2Shared.shared.enums import ElemEnum
 from src.models.base import Base
 from src.models.item import Item
@@ -109,5 +109,5 @@ class Character(Base):
         return [
             job_info
             for job_info in self.character_job_info
-            if job_info.job_id in HARVEST_JOBS_ID
+            if job_info.job.name in HARVEST_JOBS_NAME
         ]

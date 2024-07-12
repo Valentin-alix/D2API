@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from D2Shared.shared.schemas.character import (
     CharacterJobInfoSchema,
     CharacterSchema,
+    UpdateCharacterSchema,
 )
 from D2Shared.shared.schemas.collectable import CollectableSchema
 from D2Shared.shared.schemas.spell import SpellSchema, UpdateSpellSchema
@@ -27,7 +28,7 @@ router = APIRouter(prefix="/character", dependencies=[Depends(login)])
 @router.put("/{character_id}", response_model=CharacterSchema)
 def update_character(
     character_id: str,
-    character_update: CharacterSchema,
+    character_update: UpdateCharacterSchema,
     session: Session = Depends(session_local),
 ):
     character = session.get(Character, character_id)

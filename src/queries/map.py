@@ -127,8 +127,8 @@ def get_related_map(
     y: int,
     world_id: int,
     options: ExecutableOption | None = None,
-    force: bool = False,
-) -> Map | None: ...
+    force: Literal[True] = ...,
+) -> Map: ...
 
 
 @overload
@@ -138,8 +138,8 @@ def get_related_map(
     y: int,
     world_id: int,
     options: ExecutableOption | None = None,
-    force: Literal[True] = ...,
-) -> Map: ...
+    force: bool = False,
+) -> Map | None: ...
 
 
 def get_related_map(

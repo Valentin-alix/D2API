@@ -1,7 +1,8 @@
 from sqlalchemy import case
 from sqlalchemy.orm import Session
 
-from D2Shared.shared.consts.areas import FARMABLE_SUB_AREAS
+from D2Shared.shared.consts.areas import FARMABLE_SUB_AREAS_BY_AREA
+from src.models.area import Area
 from src.models.character import Character, CharacterJobInfo
 from src.models.collectable import Collectable
 from src.models.item import Item
@@ -20,8 +21,19 @@ def populate_job_info(session: Session, character_id: str):
 
 def populate_sub_areas(session: Session, character: Character):
     """used at character creation"""
+    farmable_sub_area_ids: list[int] = []
+    for area_name, sub_area_names in FARMABLE_SUB_AREAS_BY_AREA.items():
+        farmable_sub_area_ids.extend(
+            [
+                elem[0]
+                for elem in session.query(SubArea.id)
+                .join(Area, SubArea.area_id == Area.id)
+                .filter(SubArea.name.in_(sub_area_names), Area.name == area_name)
+                .all()
+            ]
+        )
     character.sub_areas = (
-        session.query(SubArea).filter(SubArea.id.in_(FARMABLE_SUB_AREAS)).all()
+        session.query(SubArea).filter(SubArea.id.in_(farmable_sub_area_ids)).all()
     )
     session.commit()
 

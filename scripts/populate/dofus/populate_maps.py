@@ -16,7 +16,7 @@ from src.models.map_direction import (
 from src.models.sub_area import SubArea
 from src.models.waypoint import Waypoint
 from src.models.world import World
-from src.queries.map import get_related_neighbor_map
+from src.queries.map import get_related_map, get_related_neighbor_map
 from src.queries.utils import get_auto_id
 from src.queries.zaapi import get_zaapis
 
@@ -175,7 +175,15 @@ def init_map_directions(session: Session):
     maps_direction: list[MapDirection] = []
 
     zaapis_map_ids: list[int] = [
-        zaapi.map_id for zaapis in get_zaapis().values() for zaapi in zaapis
+        get_related_map(
+            session,
+            x=zaapi.map_coordinates.x,
+            y=zaapi.map_coordinates.y,
+            world_id=zaapi.map_coordinates.world_id,
+            force=True,
+        ).id
+        for zaapis in get_zaapis().values()
+        for zaapi in zaapis
     ]
 
     for map in tqdm(session.query(Map).options(joinedload(Map.waypoint)).all()):

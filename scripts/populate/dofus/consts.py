@@ -18,16 +18,6 @@ D2O_WAYPOINT_PATH = os.path.join(D2O_FOLDER, "Waypoints.json")
 D2O_JOB_PATH = os.path.join(D2O_FOLDER, "Jobs.json")
 D2O_SKILL_PATH = os.path.join(D2O_FOLDER, "Skills.json")
 D2O_AREA_PATH = os.path.join(D2O_FOLDER, "Areas.json")
-D2O_BREED_PATH = os.path.join(D2O_FOLDER, "Breeds.json")
-D2O_SPELL_VARIANT_PATH = os.path.join(D2O_FOLDER, "SpellVariants.json")
-D2O_SPELLS_PATH = os.path.join(D2O_FOLDER, "Spells.json")
-D2O_SPELL_LEVELS_PATH = os.path.join(D2O_FOLDER, "SpellLevels.json")
-D2O_CHARACTERISTIC_CATEGORY_PATH = os.path.join(
-    D2O_FOLDER, "CharacteristicCategories.json"
-)
-D2O_CHARACTERISTIC_PATH = os.path.join(D2O_FOLDER, "Characteristics.json")
-D2O_EFFECTS_PATH = os.path.join(D2O_FOLDER, "Effects.json")
-D2O_SPELL_STATE_PATH = os.path.join(D2O_FOLDER, "SpellStates.json")
 D2O_MONSTER_PATH = os.path.join(D2O_FOLDER, "Monsters.json")
 
 GFX_ICONS_ITEMS = os.path.join(PYDOFUS_OUTPUT_FOLDER, "gfx", "items")

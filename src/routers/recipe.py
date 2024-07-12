@@ -1,15 +1,16 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from D2Shared.shared.consts.jobs import HARVEST_JOBS_ID
+from D2Shared.shared.consts.jobs import HARVEST_JOBS_NAME
 from D2Shared.shared.enums import CategoryEnum
 from D2Shared.shared.schemas.recipe import RecipeSchema
 from src.database import session_local
 from src.models.character import Character
+from src.models.job import Job
 from src.queries.recipe import (
     get_best_recipe_for_benefits,
-    get_valid_ordered_recipes,
     get_best_recipes,
+    get_valid_ordered_recipes,
 )
 from src.security.auth import login
 
@@ -24,8 +25,13 @@ def get_default_recipes(
     character = session.get_one(Character, character_id)
     bank_item_ids: list[int] = [elem.id for elem in character.bank_items]
     best_recipes = list(get_best_recipes(session, character))
+
+    harvest_job_ids: list[int] = [
+        elem[0]
+        for elem in session.query(Job.id).filter(Job.name.in_(HARVEST_JOBS_NAME)).all()
+    ]
     ordered_valid_recipes = get_valid_ordered_recipes(
-        bank_item_ids, best_recipes, HARVEST_JOBS_ID
+        bank_item_ids, best_recipes, harvest_job_ids
     )
     return ordered_valid_recipes
 

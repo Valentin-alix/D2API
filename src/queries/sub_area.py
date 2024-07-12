@@ -98,7 +98,7 @@ def get_max_time_fighter(session: Session, sub_areas: list[SubArea]) -> int:
     return int(maps_time)
 
 
-STOP_LVL_SUB_AREA_FARM: dict[int, int] = {AreaEnum.INCARNAM: 15}
+STOP_LVL_SUB_AREA_FARM: dict[AreaEnum, int] = {AreaEnum.INCARNAM: 15}
 
 
 def get_valid_sub_areas_fighter(
@@ -110,17 +110,19 @@ def get_valid_sub_areas_fighter(
         list[SubArea]: valid sub areas
     """
     char_sub_area_ids = [elem.id for elem in character.sub_areas]
-    query = session.query(SubArea).filter(
-        SubArea.id.in_(char_sub_area_ids), SubArea.level <= character.lvl
+    query = (
+        session.query(SubArea)
+        .join(Area, SubArea.area_id == Area.id)
+        .filter(SubArea.id.in_(char_sub_area_ids), SubArea.level <= character.lvl)
     )
     if not character.is_sub:
-        query = query.join(Area, SubArea.area_id == Area.id).filter(
+        query = query.filter(
             ~Area.is_for_sub,
         )
 
     stop_lvl_case = case(
-        {area_id: max_lvl for area_id, max_lvl in STOP_LVL_SUB_AREA_FARM.items()},
-        value=SubArea.area_id,
+        {area_str: max_lvl for area_str, max_lvl in STOP_LVL_SUB_AREA_FARM.items()},
+        value=Area.name,
         else_=200,
     )
 
@@ -136,7 +138,7 @@ def get_valid_sub_areas_fighter(
     return valid_sub_areas
 
 
-STOP_JOB_LVL_AREA_FARM: dict[int, int] = {AreaEnum.INCARNAM: 20}
+STOP_JOB_LVL_AREA_FARM: dict[AreaEnum, int] = {AreaEnum.INCARNAM: 20}
 
 
 def get_weights_harvest_map(
@@ -213,9 +215,13 @@ def get_valid_sub_areas_harvester(
             )
         )
     else:
-        query = session.query(SubArea).filter(
-            SubArea.id.in_(char_sub_area_ids),
-            SubArea.is_not_aggressive(character.lvl),
+        query = (
+            session.query(SubArea)
+            .join(Area, SubArea.area_id == Area.id)
+            .filter(
+                SubArea.id.in_(char_sub_area_ids),
+                SubArea.is_not_aggressive(character.lvl),
+            )
         )
 
     min_harvest_job_lvl: int = min(
@@ -223,8 +229,8 @@ def get_valid_sub_areas_harvester(
     )
 
     stop_lvl_case = case(
-        {area_id: max_lvl for area_id, max_lvl in STOP_JOB_LVL_AREA_FARM.items()},
-        value=SubArea.area_id,
+        {area_str: max_lvl for area_str, max_lvl in STOP_JOB_LVL_AREA_FARM.items()},
+        value=Area.name,
         else_=200,
     )
 
