@@ -7,11 +7,12 @@ from pathlib import Path
 from time import sleep
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import PlainTextResponse
 
-from scripts.populate.extern.populate_extern import populate_extern
-from src.database import SessionMaker
 from src.routers import (
     character,
     collectable,
@@ -36,11 +37,22 @@ from src.routers import (
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    populate_extern(SessionMaker())
     yield
 
 
 app = FastAPI(lifespan=lifespan)
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    return PlainTextResponse(str(exc.detail), status_code=exc.status_code)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: StarletteHTTPException):
+    # the client sent invalid datas
+    return PlainTextResponse(str(exc), status_code=400)
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
