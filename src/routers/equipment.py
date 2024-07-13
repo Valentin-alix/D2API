@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from D2Shared.shared.schemas.equipment import ReadEquipmentSchema, UpdateEquipmentSchema
 from src.database import session_local
 from src.models.equipment import Equipment
-from src.models.rune import Line
+from src.models.rune import Line, Stat
 from src.models.user import User
 from src.queries.utils import get_or_create
 from src.security.auth import login
@@ -31,15 +31,8 @@ def create_equipment(
             )
         )
 
-    if equipment_datas.exo_line is not None:
-        equipment.exo_line = get_or_create(
-            session,
-            Line,
-            False,
-            stat_id=equipment_datas.exo_line.stat_id,
-            equipment_id=equipment.id,
-        )[0]
-        equipment.exo_line.value = equipment_datas.exo_line.value
+    if equipment_datas.exo_stat is not None:
+        equipment.exo_stat = session.get_one(Stat, equipment_datas.exo_stat.id)
 
     session.commit()
     return equipment
@@ -68,18 +61,11 @@ def update_equipment(
     equipment.lines = line_instances
     equipment.label = equipment_datas.label
 
-    if equipment_datas.exo_line is not None:
-        equipment.exo_line = get_or_create(
-            session,
-            Line,
-            False,
-            stat_id=equipment_datas.exo_line.stat_id,
-            equipment_id=equipment.id,
-        )[0]
-        equipment.exo_line.value = equipment_datas.exo_line.value
+    if equipment_datas.exo_stat is not None:
+        equipment.exo_stat = session.get_one(Stat, equipment_datas.exo_stat.id)
 
-    if equipment.exo_line:
-        equipment.exo_line.spent_quantity = 0
+    if equipment.exo_stat:
+        equipment.exo_attempt = 0
 
     session.commit()
     return equipment
