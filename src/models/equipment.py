@@ -1,22 +1,20 @@
-from typing import TYPE_CHECKING
-
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
-
-if TYPE_CHECKING:
-    from src.models.rune import Line
-
-
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from src.models.rune import Line
 
 
 class Equipment(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     label: Mapped[str] = mapped_column(nullable=False)
     user_id: Mapped[int] = mapped_column(nullable=False)
-    lines: Mapped[list["Line"]] = relationship(
-        back_populates="equipment", cascade="all, delete-orphan"
+    lines: Mapped[list[Line]] = relationship(
+        cascade="all, delete-orphan", foreign_keys=[Line.equipment_id]
+    )
+    exo_line_id: Mapped[int] = mapped_column(ForeignKey("line.id"), nullable=True)
+    exo_line: Mapped["Line"] = relationship(
+        cascade="all, delete-orphan", foreign_keys=[exo_line_id]
     )
     count_attempt: Mapped[int] = mapped_column(default=0, nullable=False)
 

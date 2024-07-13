@@ -31,6 +31,16 @@ def create_equipment(
             )
         )
 
+    if equipment_datas.exo_line is not None:
+        equipment.exo_line = get_or_create(
+            session,
+            Line,
+            False,
+            stat_id=equipment_datas.exo_line.stat_id,
+            equipment_id=equipment.id,
+        )[0]
+        equipment.exo_line.value = equipment_datas.exo_line.value
+
     session.commit()
     return equipment
 
@@ -58,6 +68,35 @@ def update_equipment(
     equipment.count_attempt = 0
     equipment.lines = line_instances
     equipment.label = equipment_datas.label
+
+    if equipment_datas.exo_line is not None:
+        equipment.exo_line = get_or_create(
+            session,
+            Line,
+            False,
+            stat_id=equipment_datas.exo_line.stat_id,
+            equipment_id=equipment.id,
+        )[0]
+        equipment.exo_line.value = equipment_datas.exo_line.value
+
+    if equipment.exo_line:
+        equipment.exo_line.spent_quantity = 0
+
+    session.commit()
+    return equipment
+
+
+@router.put("/{equipment_id}/attempt/", response_model=ReadEquipmentSchema)
+def increment_equipment_attempt(
+    equipment_id: int,
+    session: Session = Depends(session_local),
+    user: User = Depends(login),
+):
+    equipment = session.get_one(Equipment, equipment_id)
+    if equipment.user_id != user.id:
+        raise HTTPException(403, "Can't update equipment of other users")
+
+    equipment.count_attempt += 1
     session.commit()
     return equipment
 

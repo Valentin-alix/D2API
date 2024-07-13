@@ -4,7 +4,6 @@ from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
-from src.models.equipment import Equipment
 from src.models.item import Item
 
 
@@ -38,7 +37,6 @@ class Line(Base):
     equipment_id: Mapped[int] = mapped_column(
         ForeignKey("equipment.id", ondelete="CASCADE"), nullable=False
     )
-    equipment: Mapped[Equipment] = relationship(back_populates="lines")
     stat_id: Mapped[int] = mapped_column(ForeignKey("stat.id"), nullable=False)
     stat: Mapped[Stat] = relationship()
     spent_quantity: Mapped[int] = mapped_column(default=0, nullable=False)

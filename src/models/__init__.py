@@ -11,6 +11,8 @@ from .price import *
 from .rune import *
 from .job import *
 from .recipe import *
+from .equipment import *
+from .rune import *
 
 from .sub_area import *
 from .waypoint import *
