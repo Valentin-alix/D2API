@@ -65,7 +65,6 @@ def update_equipment(
         line.value = line_schema.value
         line_instances.append(line)
 
-    equipment.count_attempt = 0
     equipment.lines = line_instances
     equipment.label = equipment_datas.label
 
@@ -82,21 +81,6 @@ def update_equipment(
     if equipment.exo_line:
         equipment.exo_line.spent_quantity = 0
 
-    session.commit()
-    return equipment
-
-
-@router.put("/{equipment_id}/attempt/", response_model=ReadEquipmentSchema)
-def increment_equipment_attempt(
-    equipment_id: int,
-    session: Session = Depends(session_local),
-    user: User = Depends(login),
-):
-    equipment = session.get_one(Equipment, equipment_id)
-    if equipment.user_id != user.id:
-        raise HTTPException(403, "Can't update equipment of other users")
-
-    equipment.count_attempt += 1
     session.commit()
     return equipment
 

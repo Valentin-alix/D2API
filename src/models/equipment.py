@@ -13,10 +13,7 @@ class Equipment(Base):
         cascade="all, delete-orphan", foreign_keys=[Line.equipment_id]
     )
     exo_line_id: Mapped[int] = mapped_column(ForeignKey("line.id"), nullable=True)
-    exo_line: Mapped["Line"] = relationship(
-        cascade="all, delete-orphan", foreign_keys=[exo_line_id]
-    )
-    count_attempt: Mapped[int] = mapped_column(default=0, nullable=False)
+    exo_line: Mapped["Line"] = relationship(foreign_keys=[exo_line_id])
 
     __table_args__ = (
         UniqueConstraint("label", "user_id", name="unique label for user"),
