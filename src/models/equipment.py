@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING
+
 from sqlalchemy import UniqueConstraint
+
 from src.models.base import Base
 
 if TYPE_CHECKING:
@@ -16,6 +18,7 @@ class Equipment(Base):
     lines: Mapped[list["Line"]] = relationship(
         back_populates="equipment", cascade="all, delete-orphan"
     )
+    count_attempt: Mapped[int] = mapped_column(default=0, nullable=False)
 
     __table_args__ = (
         UniqueConstraint("label", "user_id", name="unique label for user"),

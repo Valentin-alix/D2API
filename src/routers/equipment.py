@@ -48,13 +48,14 @@ def update_equipment(
 
     line_instances: list[Line] = []
     for line_schema in equipment_datas.lines:
-        Line()
         line = get_or_create(
             session, Line, False, stat_id=line_schema.stat_id, equipment_id=equipment.id
         )[0]
+        line.spent_quantity = 0
         line.value = line_schema.value
         line_instances.append(line)
 
+    equipment.count_attempt = 0
     equipment.lines = line_instances
     equipment.label = equipment_datas.label
     session.commit()

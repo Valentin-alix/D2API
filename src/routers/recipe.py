@@ -25,7 +25,6 @@ def get_default_recipes(
     character = session.get_one(Character, character_id)
     bank_item_ids: list[int] = [elem.id for elem in character.bank_items]
     best_recipes = list(get_best_recipes(session, character))
-
     harvest_job_ids: list[int] = [
         elem[0]
         for elem in session.query(Job.id).filter(Job.name.in_(HARVEST_JOBS_NAME)).all()

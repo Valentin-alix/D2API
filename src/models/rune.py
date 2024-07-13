@@ -5,6 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
 from src.models.equipment import Equipment
+from src.models.item import Item
 
 
 class Stat(Base):
@@ -20,6 +21,8 @@ class Rune(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     stat_id: Mapped[int] = mapped_column(ForeignKey("stat.id"), nullable=False)
+    item_id: Mapped[int] = mapped_column(ForeignKey("item.id"), nullable=False)
+    item: Mapped[Item] = relationship()
     stat: Mapped[Stat] = relationship(back_populates="runes")
     stat_quantity: Mapped[int] = mapped_column(nullable=False)
 
@@ -38,6 +41,7 @@ class Line(Base):
     equipment: Mapped[Equipment] = relationship(back_populates="lines")
     stat_id: Mapped[int] = mapped_column(ForeignKey("stat.id"), nullable=False)
     stat: Mapped[Stat] = relationship()
+    spent_quantity: Mapped[int] = mapped_column(default=0, nullable=False)
 
     __table_args__ = (
         UniqueConstraint("stat_id", "equipment_id", name="unique stat for equipment"),
