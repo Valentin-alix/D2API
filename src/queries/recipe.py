@@ -142,7 +142,7 @@ def get_available_recipes(
     job_lvl_case = case(
         {_elem.job_id: _elem.lvl for _elem in jobs_infos},
         value=Recipe.job_id,
-        else_=200,
+        else_=-1,
     )
 
     return (
