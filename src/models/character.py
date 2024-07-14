@@ -14,6 +14,7 @@ from D2Shared.shared.enums import ElemEnum
 from src.models.base import Base
 from src.models.item import Item
 from src.models.job import Job
+from src.models.recipe import Recipe
 from src.models.server import Server
 from src.models.spell import Spell
 from src.models.sub_area import SubArea
@@ -38,6 +39,13 @@ character_sub_areas_association = Table(
     Base.metadata,
     Column("character_id", ForeignKey("character.id", ondelete="CASCADE")),
     Column("sub_area_id", ForeignKey("sub_area.id")),
+)
+
+character_recipe_association = Table(
+    "character_recipe_association",
+    Base.metadata,
+    Column("character_id", ForeignKey("character.id", ondelete="CASCADE")),
+    Column("recipe_id", ForeignKey("recipe.id")),
 )
 
 
@@ -65,6 +73,9 @@ class Character(Base):
     )
     sub_areas: Mapped[List["SubArea"]] = relationship(
         secondary=character_sub_areas_association
+    )
+    recipes: Mapped[List["Recipe"]] = relationship(
+        secondary=character_recipe_association
     )
     po_bonus: Mapped[int] = mapped_column(nullable=False, default=0)
     is_sub: Mapped[bool] = mapped_column(nullable=False, default=False)

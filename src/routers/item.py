@@ -42,6 +42,6 @@ def get_default_sellable(
         session,
         character.server_id,
         recipe_ids,
-        [elem.id for elem in character.bank_items],
+        [_elem.id for _elem in character.bank_items],
     )
     return sell_items

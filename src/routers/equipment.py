@@ -71,6 +71,21 @@ def update_equipment(
     return equipment
 
 
+@router.put("/{equipment_id}/exo_attempt/", response_model=ReadEquipmentSchema)
+def increment_exo_attempt(
+    equipment_id: int,
+    session: Session = Depends(session_local),
+    user: User = Depends(login),
+):
+    equipment = session.get_one(Equipment, equipment_id)
+    if equipment.user_id != user.id:
+        raise HTTPException(403, "Can't update equipment of other users")
+
+    equipment.exo_attempt += 1
+    session.commit()
+    return equipment
+
+
 @router.delete("/{equipment_id}")
 def delete_equipment(
     equipment_id: int,

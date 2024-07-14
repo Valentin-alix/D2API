@@ -11,6 +11,7 @@ from D2Shared.shared.schemas.spell import SpellSchema, UpdateSpellSchema
 from src.database import session_local
 from src.models.character import Character, CharacterJobInfo
 from src.models.item import Item
+from src.models.recipe import Recipe
 from src.models.spell import Spell
 from src.models.sub_area import SubArea
 from src.models.waypoint import Waypoint
@@ -68,6 +69,18 @@ def update_waypoints(
     character = session.get_one(Character, character_id)
     waypoints = session.query(Waypoint).filter(Waypoint.id.in_(waypoint_ids)).all()
     character.waypoints = waypoints
+    session.commit()
+
+
+@router.put("/{character_id}/recipes")
+def update_recipes(
+    character_id: str,
+    recipe_ids: list[int],
+    session: Session = Depends(session_local),
+):
+    character = session.get_one(Character, character_id)
+    recipes = session.query(Recipe).filter(Recipe.id.in_(recipe_ids)).all()
+    character.recipes = recipes
     session.commit()
 
 

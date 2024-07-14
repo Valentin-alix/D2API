@@ -1,55 +1,60 @@
 import logging
-from sqlalchemy import Row, and_, func
+
+from sqlalchemy import Row, and_, case, func
 from sqlalchemy.orm import Session, aliased, joinedload
 
 from D2Shared.shared.enums import CategoryEnum
 from D2Shared.shared.utils.debugger import timeit
-from src.models.character import Character, CharacterJobInfo
+from src.models.character import CharacterJobInfo
 from src.models.ingredient import Ingredient
 from src.models.item import Item
-from src.models.type_item import TypeItem
 from src.models.price import Price
 from src.models.recipe import Recipe
+from src.models.type_item import TypeItem
 
 logger = logging.getLogger(__name__)
 
 
 def get_deep_recipes_for_recipe(
-    bank_item_ids: list[int], recipe: Recipe, valid_job_ids: list[int]
-) -> list[Recipe] | None:
+    bank_item_ids: list[int], recipe: Recipe, jobs_infos: list[CharacterJobInfo]
+) -> list[Recipe]:
     recipes_item: list[Recipe] = []
-    if recipe.job_id not in valid_job_ids:
-        return None
+
+    related_job_info = next(
+        (_elem for _elem in jobs_infos if _elem.job_id == recipe.job_id), None
+    )
+    if related_job_info is None or related_job_info.lvl < recipe.result_item.level:
+        return recipes_item
+
     for ingredient in sorted(
-        recipe.ingredients, key=lambda elem: elem.item.level, reverse=True
+        recipe.ingredients, key=lambda _elem: _elem.item.level, reverse=True
     ):
-        if ingredient.item.recipe is not None:
-            # get deep recipes for ingredient
-            ingredient_recipes = get_deep_recipes_for_recipe(
-                bank_item_ids, ingredient.item.recipe, valid_job_ids
-            )
-            if ingredient_recipes is None:
-                return None
-            recipes_item.extend(ingredient_recipes)
-        elif ingredient.item.id not in bank_item_ids:
-            return None
+        if ingredient.item.recipe is None:
+            if ingredient.item_id not in bank_item_ids:
+                return []
+            continue
+        # get deep recipes for ingredient
+        ingredient_recipes = get_deep_recipes_for_recipe(
+            bank_item_ids, ingredient.item.recipe, jobs_infos
+        )
+        recipes_item.extend(ingredient_recipes)
+
     recipes_item.append(recipe)
     return recipes_item
 
 
 def get_valid_ordered_recipes(
-    bank_item_ids: list[int], recipes: list[Recipe], valid_job_ids: list[int]
+    bank_item_ids: list[int], recipes: list[Recipe], jobs_infos: list[CharacterJobInfo]
 ) -> list[Recipe]:
     recipes.sort(key=lambda recipe: recipe.result_item.level, reverse=True)
     ordered_recipes: list[Recipe] = []
     for recipe in recipes:
         recipes_for_recipe = get_deep_recipes_for_recipe(
-            bank_item_ids, recipe, valid_job_ids
+            bank_item_ids, recipe, jobs_infos
         )
-        if recipes_for_recipe is not None:
-            ordered_recipes.extend(
-                [elem for elem in recipes_for_recipe if elem not in ordered_recipes]
-            )
+        ordered_recipes.extend(
+            [_elem for _elem in recipes_for_recipe if _elem not in ordered_recipes]
+        )
 
     return ordered_recipes
 
@@ -107,7 +112,6 @@ def get_recipes_for_upgrading_job(
     recipes_job = (
         session.query(Recipe)
         .join(Item, Item.id == Recipe.result_item_id)
-        .join(Ingredient, Recipe.id == Ingredient.recipe_id)
         .filter(
             Recipe.job_id == job_info.job_id,
             Item.level.between(job_info.lvl - 80, job_info.lvl),
@@ -132,10 +136,29 @@ def get_recipes_for_benefits(job_id: int, session: Session) -> list[Recipe]:
     return recipes_job
 
 
-def get_best_recipes(session: Session, character: Character) -> set[Recipe]:
+def get_available_recipes(
+    session: Session, jobs_infos: list[CharacterJobInfo]
+) -> list[Recipe]:
+    job_lvl_case = case(
+        {_elem.job_id: _elem.lvl for _elem in jobs_infos},
+        value=Recipe.job_id,
+        else_=200,
+    )
+
+    return (
+        session.query(Recipe)
+        .join(Item, Recipe.result_item_id == Item.id)
+        .filter(Item.level <= job_lvl_case)
+        .all()
+    )
+
+
+def get_best_recipes(
+    session: Session, jobs_infos: list[CharacterJobInfo]
+) -> set[Recipe]:
     recipes: set[Recipe] = set()
 
-    for job_info in character.harvest_jobs_infos:
+    for job_info in jobs_infos:
         if job_info.lvl == 200:
             recipes.update(get_recipes_for_benefits(job_info.job_id, session))
         else:
