@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 from D2Shared.shared.schemas.equipment import ReadEquipmentSchema, UpdateEquipmentSchema
 from src.database import session_local
@@ -104,5 +104,15 @@ def get_equipments(
     session: Session = Depends(session_local),
     user: User = Depends(login),
 ):
-    equipments = session.query(Equipment).filter(Equipment.user_id == user.id).all()
+    equipments = (
+        session.query(Equipment)
+        .filter(Equipment.user_id == user.id)
+        .options(
+            selectinload(Equipment.lines)
+            .subqueryload(Line.stat)
+            .selectinload(Stat.runes),
+            joinedload(Equipment.exo_stat).selectinload(Stat.runes),
+        )
+        .all()
+    )
     return equipments

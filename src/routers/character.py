@@ -8,6 +8,7 @@ from D2Shared.shared.schemas.character import (
 )
 from D2Shared.shared.schemas.collectable import CollectableSchema
 from D2Shared.shared.schemas.spell import SpellSchema, UpdateSpellSchema
+from D2Shared.shared.utils.debugger import timeit
 from src.database import session_local
 from src.models.character import Character, CharacterJobInfo
 from src.models.item import Item
@@ -159,6 +160,7 @@ def get_char_possible_collectable(
 
 
 @router.get("/{character_id}/or_create/", response_model=CharacterSchema)
+@timeit
 def get_or_create_character(
     character_id: str,
     session: Session = Depends(session_local),

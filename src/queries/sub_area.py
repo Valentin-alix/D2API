@@ -1,6 +1,7 @@
 import math
 import random
 
+from cachetools import cached
 from sqlalchemy import case, func
 from sqlalchemy.orm import Session, aliased, joinedload
 
@@ -18,6 +19,17 @@ from src.models.monster import Monster
 from src.models.price import Price
 from src.models.sub_area import SubArea
 from src.queries.monster import get_monster_res_filter_elem
+
+
+@cached(cache={})
+def get_sub_areas_query(session: Session) -> list[SubArea]:
+    sub_areas = (
+        session.query(SubArea)
+        .join(Map, Map.sub_area_id == SubArea.id)
+        .filter(Map.world_id.in_([1, 2]))
+        .all()
+    )
+    return sub_areas
 
 
 def get_average_drop_value(session: Session, sub_area_id: int, server_id: int) -> float:

@@ -1,7 +1,7 @@
 import logging
 
 from sqlalchemy import Row, and_, case, func
-from sqlalchemy.orm import Session, aliased, joinedload
+from sqlalchemy.orm import Session, aliased, joinedload, selectinload
 
 from D2Shared.shared.enums import CategoryEnum
 from D2Shared.shared.utils.debugger import timeit
@@ -130,7 +130,13 @@ def get_recipes_for_benefits(job_id: int, session: Session) -> list[Recipe]:
         .join(Price, Price.item_id == Item.id)
         .filter(Recipe.job_id == job_id)
         .order_by(Price.average.desc())
-        .options(joinedload(Recipe.ingredients).subqueryload(Ingredient.item))
+        .options(
+            joinedload(Recipe.result_item).subqueryload(Item.type_item),
+            joinedload(Recipe.job),
+            selectinload(Recipe.ingredients)
+            .subqueryload(Ingredient.item)
+            .subqueryload(Item.type_item),
+        )
         .all()
     )
     return recipes_job
@@ -149,6 +155,13 @@ def get_available_recipes(
         session.query(Recipe)
         .join(Item, Recipe.result_item_id == Item.id)
         .filter(Item.level <= job_lvl_case)
+        .options(
+            joinedload(Recipe.result_item).subqueryload(Item.type_item),
+            joinedload(Recipe.job),
+            selectinload(Recipe.ingredients)
+            .subqueryload(Ingredient.item)
+            .subqueryload(Item.type_item),
+        )
         .all()
     )
 

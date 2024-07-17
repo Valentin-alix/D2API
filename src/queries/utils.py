@@ -18,13 +18,13 @@ def get_or_create(
     session: Session,
     model: Type[T],
     commit: bool = True,
-    options: ExecutableOption | None = None,
+    options: list[ExecutableOption] | None = None,
     defaults: dict | None = None,
     **kwargs,
 ) -> tuple[T, bool]:
     query = session.query(model).filter_by(**kwargs)
     if options is not None:
-        query = query.options(options)
+        query = query.options(*options)
 
     instance = query.first()
     if instance is not None:
