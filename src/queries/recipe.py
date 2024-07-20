@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def get_deep_recipes_for_recipe(
     bank_item_ids: list[int], recipe: Recipe, jobs_infos: list[CharacterJobInfo]
-) -> list[Recipe]:
+) -> list[Recipe] | None:
     recipes_item: list[Recipe] = []
 
     related_job_info = next(
@@ -31,19 +31,21 @@ def get_deep_recipes_for_recipe(
     ):
         if ingredient.item.recipe is None:
             if ingredient.item_id not in bank_item_ids:
-                return []
+                return None
             continue
         # get deep recipes for ingredient
         ingredient_recipes = get_deep_recipes_for_recipe(
             bank_item_ids, ingredient.item.recipe, jobs_infos
         )
+        if ingredient_recipes is None:
+            return None
         recipes_item.extend(ingredient_recipes)
 
     recipes_item.append(recipe)
     return recipes_item
 
 
-def get_valid_ordered_recipes(
+def get_valid_ordered_recipes_query(
     bank_item_ids: list[int], recipes: list[Recipe], jobs_infos: list[CharacterJobInfo]
 ) -> list[Recipe]:
     recipes.sort(key=lambda recipe: recipe.result_item.level, reverse=True)
@@ -52,6 +54,8 @@ def get_valid_ordered_recipes(
         recipes_for_recipe = get_deep_recipes_for_recipe(
             bank_item_ids, recipe, jobs_infos
         )
+        if recipes_for_recipe is None:
+            continue
         ordered_recipes.extend(
             [_elem for _elem in recipes_for_recipe if _elem not in ordered_recipes]
         )

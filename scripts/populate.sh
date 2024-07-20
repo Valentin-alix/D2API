@@ -8,3 +8,4 @@ source .env
 set +o allexport
 
 cat scripts/init.sql | docker exec -i ezred2db psql -U $DB_USERNAME -d $DB_NAME
+# -v ON_ERROR_STOP=1
