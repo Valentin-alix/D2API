@@ -20,6 +20,7 @@ from src.routers import (
     equipment,
     item,
     job,
+    line,
     login,
     map,
     price,
@@ -86,6 +87,7 @@ app.include_router(login.router)
 app.include_router(config_user.router)
 app.include_router(stat.router)
 app.include_router(equipment.router)
+app.include_router(line.router)
 
 
 def is_db_ready(host: str, port: int) -> bool:
