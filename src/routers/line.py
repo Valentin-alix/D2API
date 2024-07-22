@@ -17,4 +17,5 @@ def add_spent_quantity(
 ):
     line = session.get_one(Line, line_id)
     line.spent_quantity += spent_quantity
+    session.commit()
     return line
