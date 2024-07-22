@@ -1,10 +1,9 @@
 import logging
 
-from sqlalchemy import Row, and_, case, func
+from sqlalchemy import Row, and_, case, func, or_
 from sqlalchemy.orm import Session, aliased, joinedload, selectinload
 
 from D2Shared.shared.enums import CategoryEnum
-from D2Shared.shared.utils.debugger import timeit
 from src.models.character import CharacterJobInfo
 from src.models.ingredient import Ingredient
 from src.models.item import Item
@@ -63,7 +62,6 @@ def get_valid_ordered_recipes_query(
     return ordered_recipes
 
 
-@timeit
 def get_merged_ordered_with_recipe_items(
     session: Session, server_id: int, recipe_ids: list[int], item_ids: list[int]
 ) -> list[Item]:
@@ -93,17 +91,22 @@ def get_merged_ordered_with_recipe_items(
 
     return (
         session.query(Item)
-        .join(Ingredient, Ingredient.item_id == Item.id)
         .join(Price, Price.item_id == Item.id)
-        .join(total_ingredients_subquery, total_ingredients_subquery.c.id == Item.id)
-        .join(
+        .outerjoin(Recipe, Item.id == Recipe.result_item_id)
+        .outerjoin(
+            total_ingredients_subquery, total_ingredients_subquery.c.id == Item.id
+        )
+        .outerjoin(
             filtered_ingredients_subquery, filtered_ingredients_subquery.c.id == Item.id
         )
         .filter(
-            Item.id.in_(item_ids),
             Price.server_id == server_id,
-            total_ingredients_subquery.c.total_ingredient_count
-            == filtered_ingredients_subquery.c.filtered_ingredient_count,
+            Item.id.in_(item_ids),
+            or_(
+                total_ingredients_subquery.c.total_ingredient_count
+                == filtered_ingredients_subquery.c.filtered_ingredient_count,
+                Recipe.id.in_(recipe_ids),
+            ),
         )
         .order_by(Price.average.desc())
         .all()

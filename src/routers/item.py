@@ -6,7 +6,6 @@ from src.database import session_local
 from src.models.character import Character
 from src.models.icon import Icon
 from src.models.item import Item
-from src.models.recipe import Recipe
 from src.queries.recipe import (
     get_merged_ordered_with_recipe_items,
 )
@@ -43,13 +42,6 @@ def get_default_sellable(
         session,
         character.server_id,
         recipe_ids,
-        [_elem.id for _elem in character.bank_items],
+        [_item.id for _item in character.bank_items],
     )
-    item_recipes = (
-        session.query(Item)
-        .join(Recipe, Recipe.result_item_id == Item.id)
-        .filter(Recipe.id.in_(recipe_ids))
-        .all()
-    )
-    sell_items.extend(item_recipes)
     return sell_items
