@@ -3,7 +3,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
 from src.models.icon import Icon
-from src.models.price import Price
 from src.models.recipe import Recipe
 from src.models.type_item import TypeItem
 
@@ -20,7 +19,6 @@ class Item(Base):
     recipe: Mapped[Recipe | None] = relationship(back_populates="result_item")
     icon_id: Mapped[int | None] = mapped_column(ForeignKey("icon.id"), nullable=True)
     icon: Mapped[Icon | None] = relationship()
-    prices: Mapped[list[Price]] = relationship()
     is_saleable: Mapped[bool] = mapped_column(nullable=False)
 
     def __str__(self) -> str:

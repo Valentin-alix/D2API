@@ -4,7 +4,6 @@ from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
-from src.models.item import Item
 from src.models.server import Server
 
 
@@ -15,7 +14,6 @@ class Price(Base):
     server_id: Mapped[int] = mapped_column(ForeignKey("server.id"), nullable=False)
 
     average: Mapped[float | None] = mapped_column(nullable=False)
-    item: Mapped[Item] = relationship()
     server: Mapped[Server] = relationship()
 
     __table_args__ = (
