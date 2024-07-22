@@ -9,7 +9,7 @@ from src.security.auth import login
 router = APIRouter(prefix="/line", dependencies=[Depends(login)])
 
 
-@router.get("/{line_id}/", response_model=LineSchema)
+@router.put("/{line_id}/", response_model=LineSchema)
 def add_spent_quantity(
     line_id: int,
     spent_quantity: int,
