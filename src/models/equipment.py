@@ -13,7 +13,7 @@ class Equipment(Base):
     lines: Mapped[list[Line]] = relationship(cascade="all, delete-orphan")
     exo_stat_id: Mapped[int] = mapped_column(ForeignKey("stat.id"), nullable=True)
     exo_stat: Mapped[Stat] = relationship()
-    exo_attempt: Mapped[int] = mapped_column(default=0, nullable=False)
+    count_lines_achieved: Mapped[int] = mapped_column(default=0, nullable=False)
 
     __table_args__ = (
         UniqueConstraint("label", "user_id", name="unique label for user"),
