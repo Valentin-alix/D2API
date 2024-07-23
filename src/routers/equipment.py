@@ -64,15 +64,14 @@ def update_equipment(
     if equipment_datas.exo_stat is not None:
         equipment.exo_stat = session.get_one(Stat, equipment_datas.exo_stat.id)
 
-    if equipment.exo_stat:
-        equipment.exo_attempt = 0
+    equipment.count_lines_achieved = 0
 
     session.commit()
     return equipment
 
 
-@router.put("/{equipment_id}/exo_attempt/", response_model=ReadEquipmentSchema)
-def increment_exo_attempt(
+@router.put("/{equipment_id}/count_lines_achieved/", response_model=ReadEquipmentSchema)
+def increment_count_lines_achieved(
     equipment_id: int,
     session: Session = Depends(session_local),
     user: User = Depends(login),
@@ -81,7 +80,7 @@ def increment_exo_attempt(
     if equipment.user_id != user.id:
         raise HTTPException(403, "Can't update equipment of other users")
 
-    equipment.exo_attempt += 1
+    equipment.count_lines_achieved += 1
     session.commit()
     return equipment
 
