@@ -78,7 +78,6 @@ class Character(Base):
         secondary=character_recipe_association
     )
     po_bonus: Mapped[int] = mapped_column(nullable=False, default=0)
-    time_spent: Mapped[float] = mapped_column(default=0)
     elem: Mapped[ElemEnum] = mapped_column(default=ElemEnum.ELEMENT_WATER)
     server_id: Mapped[int] = mapped_column(ForeignKey("server.id"), nullable=False)
     server: Mapped[Server] = relationship()
@@ -91,7 +90,6 @@ class Character(Base):
     __table_args__ = (
         CheckConstraint("lvl>=1 AND lvl<=200", name="check legit character lvl"),
         CheckConstraint("po_bonus>=0", name="check positive po bonus"),
-        CheckConstraint("time_spent>=0", name="check positive time_spent"),
     )
 
     def __str__(self) -> str:
