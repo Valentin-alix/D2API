@@ -49,7 +49,6 @@ def related_map(
 
 @router.get("/find_path/", response_model=list[MapWithActionSchema] | None)
 def find_path(
-    is_sub: bool,
     use_transport: bool,
     map_id: int,
     from_direction: FromDirection,
@@ -57,7 +56,7 @@ def find_path(
     target_map_ids: list[int],
     session: Session = Depends(session_local),
 ):
-    astar_map = AstarMap(is_sub, use_transport, available_waypoints_ids, session)
+    astar_map = AstarMap(use_transport, available_waypoints_ids, session)
     path_map = astar_map.find_path(
         session.get_one(Map, map_id),
         from_direction,
@@ -136,8 +135,7 @@ def get_map_directions(
 @router.get("/limit_maps_sub_area/", response_model=list[MapSchema])
 def limit_maps_sub_area(
     sub_area_ids: list[int],
-    is_sub: bool,
     session: Session = Depends(session_local),
 ):
-    maps = get_limit_maps_sub_area_id(session, sub_area_ids, is_sub)
+    maps = get_limit_maps_sub_area_id(session, sub_area_ids)
     return maps

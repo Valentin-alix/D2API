@@ -35,14 +35,13 @@ def random_grouped_sub_area(
     sub_area_ids_farming: list[int],
     weight_by_map: dict[int, float],
     valid_sub_area_ids: list[int],
-    is_sub: bool,
     session: Session = Depends(session_local),
 ):
     valid_sub_areas = (
         session.query(SubArea).filter(SubArea.id.in_(valid_sub_area_ids)).all()
     )
     return get_random_grouped_sub_area(
-        session, sub_area_ids_farming, weight_by_map, valid_sub_areas, is_sub
+        session, sub_area_ids_farming, weight_by_map, valid_sub_areas
     )
 
 

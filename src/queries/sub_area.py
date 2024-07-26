@@ -127,10 +127,6 @@ def get_valid_sub_areas_fighter(
         .join(Area, SubArea.area_id == Area.id)
         .filter(SubArea.id.in_(char_sub_area_ids), SubArea.level <= character.lvl)
     )
-    if not character.is_sub:
-        query = query.filter(
-            ~Area.is_for_sub,
-        )
 
     stop_lvl_case = case(
         {area_str: max_lvl for area_str, max_lvl in STOP_LVL_SUB_AREA_FARM.items()},
@@ -216,25 +212,15 @@ def get_valid_sub_areas_harvester(
         list[SubArea]: valid sub areas
     """
     char_sub_area_ids = [elem.id for elem in character.sub_areas]
-    if not character.is_sub:
-        query = (
-            session.query(SubArea)
-            .join(Area, SubArea.area_id == Area.id)
-            .filter(
-                SubArea.id.in_(char_sub_area_ids),
-                SubArea.is_not_aggressive(character.lvl),
-                ~Area.is_for_sub,
-            )
+
+    query = (
+        session.query(SubArea)
+        .join(Area, SubArea.area_id == Area.id)
+        .filter(
+            SubArea.id.in_(char_sub_area_ids),
+            SubArea.is_not_aggressive(character.lvl),
         )
-    else:
-        query = (
-            session.query(SubArea)
-            .join(Area, SubArea.area_id == Area.id)
-            .filter(
-                SubArea.id.in_(char_sub_area_ids),
-                SubArea.is_not_aggressive(character.lvl),
-            )
-        )
+    )
 
     min_harvest_job_lvl: int = min(
         (elem.lvl for elem in character.harvest_jobs_infos), default=1
@@ -269,12 +255,12 @@ def get_max_time_harvester(session: Session, sub_areas: list[SubArea]) -> int:
 
 
 def get_average_sub_area_weight(
-    sub_area: SubArea, weights_by_map: dict[int, float], is_sub: bool
+    sub_area: SubArea, weights_by_map: dict[int, float]
 ) -> float:
     count_maps = len(sub_area.maps)
     if count_maps == 0:
         return 0
-    if not sub_area.area.is_for_sub and is_sub:
+    if not sub_area.area.is_for_sub:
         return 0
     return sum(weights_by_map.get(map.id, 1) for map in sub_area.maps) / count_maps
 
@@ -302,7 +288,6 @@ def get_random_grouped_sub_area(
     sub_area_ids_farming: list[int],
     weights_by_map: dict[int, float],
     valid_sub_area_ids: list[SubArea],
-    is_sub: bool,
 ) -> list[SubArea]:
     count_min_sub_area = min(
         (sub_area_ids_farming.count(sub_area.id) for sub_area in valid_sub_area_ids),
@@ -317,7 +302,7 @@ def get_random_grouped_sub_area(
     sub_area = random.choices(
         less_farmed_sub_areas,
         [
-            get_average_sub_area_weight(sub_area, weights_by_map, is_sub)
+            get_average_sub_area_weight(sub_area, weights_by_map)
             for sub_area in less_farmed_sub_areas
         ],
     )[0]

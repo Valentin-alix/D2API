@@ -26,14 +26,13 @@ def get_dist_map_to_end_maps(
 
 def get_neighbors_map_change(
     map_with_action: "MapWithAction",
-    is_sub: bool,
     use_transport: bool,
     available_waypoints_ids: list[int],
     checked_world_id_waypoints: set[int],
     session: Session,
 ) -> list[MapWithAction]:
     neighbors_maps_with_action: list[MapWithAction] = []
-    if is_sub and use_transport:
+    if use_transport:
         if (
             map_with_action.map.world_id not in checked_world_id_waypoints
             and map_with_action.map.allow_teleport_from
@@ -91,12 +90,10 @@ def get_neighbors_map_change(
 class AstarMap(Astar):
     def __init__(
         self,
-        is_sub: bool,
         use_transport: bool,
         available_waypoint_ids: list[int],
         session: Session,
     ) -> None:
-        self.is_sub = is_sub
         self.session = session
         self.use_transport = use_transport
         self.available_waypoints_ids = available_waypoint_ids
@@ -138,7 +135,6 @@ class AstarMap(Astar):
     def get_neighbors(self, data: MapWithAction) -> list[MapWithAction]:
         return get_neighbors_map_change(
             data,
-            self.is_sub,
             self.use_transport,
             self.available_waypoints_ids,
             self.checked_world_id_waypoints,

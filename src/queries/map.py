@@ -12,9 +12,7 @@ from src.models.sub_area import SubArea
 from src.models.world import World
 
 
-def get_limit_maps_sub_area_id(
-    session: Session, sub_area_ids: list[int], is_sub: bool
-) -> list[Map]:
+def get_limit_maps_sub_area_id(session: Session, sub_area_ids: list[int]) -> list[Map]:
     ToMapAlias = aliased(Map)
     limit_maps_query = (
         session.query(Map)
@@ -23,17 +21,14 @@ def get_limit_maps_sub_area_id(
         .join(MapDirection, MapDirection.from_map_id == Map.id)
         .join(ToMapAlias, ToMapAlias.id == MapDirection.to_map_id)
     )
-    if is_sub:
-        limit_maps_query = limit_maps_query.filter(
-            or_(
-                ToMapAlias.sub_area_id.not_in(sub_area_ids),
-                and_(Map.waypoint != None, Map.world_id != 2),  # noqa: E711
-            )
+
+    limit_maps_query = limit_maps_query.filter(
+        or_(
+            ToMapAlias.sub_area_id.not_in(sub_area_ids),
+            and_(Map.waypoint != None, Map.world_id != 2),  # noqa: E711
         )
-    else:
-        limit_maps_query = limit_maps_query.filter(
-            ToMapAlias.sub_area_id.not_in(sub_area_ids)
-        )
+    )
+
     return limit_maps_query.all()
 
 

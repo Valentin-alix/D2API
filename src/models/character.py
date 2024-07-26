@@ -78,7 +78,6 @@ class Character(Base):
         secondary=character_recipe_association
     )
     po_bonus: Mapped[int] = mapped_column(nullable=False, default=0)
-    is_sub: Mapped[bool] = mapped_column(nullable=False, default=False)
     time_spent: Mapped[float] = mapped_column(default=0)
     elem: Mapped[ElemEnum] = mapped_column(default=ElemEnum.ELEMENT_WATER)
     server_id: Mapped[int] = mapped_column(ForeignKey("server.id"), nullable=False)
