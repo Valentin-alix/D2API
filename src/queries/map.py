@@ -86,7 +86,7 @@ def get_related_neighbor_map(
 def get_map_from_hud(
     session: Session, zone_text: str, coordinates: list[str], from_map: Map | None
 ) -> Map | None:
-    world_id: int = (
+    world_id: int | None = (
         session.query(World.id)
         .filter(literal(zone_text).contains(func.lower(World.name)))
         .scalar()

@@ -34,6 +34,17 @@ def map(
     return session.get_one(Map, map_id)
 
 
+@router.put("/{map_id}/does_not_allow_teleport_from/", response_model=MapSchema)
+def does_not_allow_teleport_from(
+    map_id: int,
+    session: Session = Depends(session_local),
+):
+    map = session.get_one(Map, map_id)
+    map.allow_teleport_from = False
+    session.commit()
+    return map
+
+
 @router.get("/related/", response_model=MapSchema)
 def related_map(
     coordinate_map_schema: CoordinatesMapSchema,

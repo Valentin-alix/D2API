@@ -11,10 +11,9 @@ from scripts.populate.dofus.consts import (
 )
 from scripts.populate.dofus.populate_areas import (
     init_areas,
-    init_sub_areas,
 )
-from scripts.populate.dofus.populate_collectable import (
-    init_collectables,
+from scripts.populate.dofus.populate_collectable_map_infos import (
+    init_collectables_map_infos,
 )
 from scripts.populate.dofus.populate_drops import (
     init_monsters,
@@ -22,19 +21,20 @@ from scripts.populate.dofus.populate_drops import (
 from scripts.populate.dofus.populate_icon import init_icons
 from scripts.populate.dofus.populate_items import (
     init_item,
-    init_prices_and_servers,
-    init_type,
 )
 from scripts.populate.dofus.populate_jobs import init_job
 from scripts.populate.dofus.populate_maps import (
     init_map,
-    init_map_directions,
-    init_waypoint,
-    init_world,
 )
+from scripts.populate.dofus.populate_maps_directions import init_map_directions
+from scripts.populate.dofus.populate_prices_servers import init_prices_and_servers
 from scripts.populate.dofus.populate_recipes import (
     init_recipes,
 )
+from scripts.populate.dofus.populate_sub_areas import init_sub_areas
+from scripts.populate.dofus.populate_type_item import init_type
+from scripts.populate.dofus.populate_waypoint import init_waypoint
+from scripts.populate.dofus.populate_world import init_world
 from src.database import ENGINE, SessionMaker, run_migrations
 from src.models.base import Base
 
@@ -61,7 +61,7 @@ async def init_bdd():
         init_waypoint(session)
         init_map_directions(session)
         init_prices_and_servers(session)
-        await init_collectables(session)
+        await init_collectables_map_infos(session)
 
 
 if __name__ == "__main__":

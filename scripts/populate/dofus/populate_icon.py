@@ -21,7 +21,7 @@ def init_icons(session: Session):
         return
 
     icons_entities: list[Icon] = []
-    for root, sub_folder, files in tqdm(os.walk(GFX_ICONS_ITEMS)):
+    for root, _, files in tqdm(os.walk(GFX_ICONS_ITEMS)):
         for file in files:
             if not file.endswith(".png") and not file.endswith(".jpg"):
                 continue

@@ -38,8 +38,7 @@ class Map(Base):
         back_populates="map"
     )
 
-    allow_teleport_from: Mapped[bool] = mapped_column(nullable=False, default=False)
-    allow_monster_fight: Mapped[bool] = mapped_column(nullable=False, default=False)
+    allow_teleport_from: Mapped[bool] = mapped_column(nullable=False, default=True)
     has_priority_on_world_map: Mapped[bool] = mapped_column(
         nullable=False, default=False
     )
