@@ -119,7 +119,6 @@ def confirm_map_direction(
 ):
     map_dir = session.get_one(MapDirection, map_direction_id)
     map_dir.to_map_id = to_map_id
-    map_dir.was_checked = True
     session.commit()
     return map_dir
 
