@@ -69,6 +69,8 @@ def get_neighbors_map_change(
                         from_action=zaapi,
                     )
                 )
+
+    session.refresh(map_with_action.map)
     possible_map_directions = [
         map_direction
         for map_direction in map_with_action.map.map_directions
