@@ -5,12 +5,13 @@ from D2Shared.shared.schemas.character import (
     CharacterJobInfoSchema,
     CharacterSchema,
     UpdateCharacterSchema,
+    UpdateCharacterSellItemInfoSchema,
 )
 from D2Shared.shared.schemas.collectable import CollectableSchema
 from D2Shared.shared.schemas.spell import SpellSchema, UpdateSpellSchema
 from D2Shared.shared.utils.debugger import timeit
 from src.database import session_local
-from src.models.character import Character, CharacterJobInfo
+from src.models.character import Character, CharacterJobInfo, CharacterSellItemInfo
 from src.models.item import Item
 from src.models.recipe import Recipe
 from src.models.spell import Spell
@@ -88,12 +89,20 @@ def update_recipes(
 @router.put("/{character_id}/sell_items")
 def update_sell_items(
     character_id: str,
-    item_ids: list[int],
+    items_info: list[UpdateCharacterSellItemInfoSchema],
     session: Session = Depends(session_local),
 ):
     character = session.get_one(Character, character_id)
-    items = session.query(Item).filter(Item.id.in_(item_ids)).all()
-    character.sell_items = items
+    character_sell_items_info: list[CharacterSellItemInfo] = []
+    for item_info in items_info:
+        character_sell_items_info.append(
+            CharacterSellItemInfo(
+                character_id=item_info.character_id,
+                item_id=item_info.item_id,
+                sale_hotel_quantity=item_info.sale_hotel_quantity,
+            )
+        )
+    character.character_sell_items_info = character_sell_items_info
     session.commit()
 
 

@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from typing import List
 
-from sqlalchemy import CheckConstraint, Column, ForeignKey, Table
+from sqlalchemy import CheckConstraint, Column, Enum, ForeignKey, Table
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
     relationship,
 )
-
+from sqlalchemy.dialects.postgresql import ARRAY
 from D2Shared.shared.consts.jobs import HARVEST_JOBS_NAME
-from D2Shared.shared.enums import ElemEnum
+from D2Shared.shared.enums import ElemEnum, SaleHotelQuantity
 from src.models.base import Base
 from src.models.item import Item
 from src.models.job import Job
@@ -34,13 +34,6 @@ character_items_association = Table(
     Column("item_id", ForeignKey("item.id")),
 )
 
-character_sell_items_association = Table(
-    "character_sell_items_association",
-    Base.metadata,
-    Column("character_id", ForeignKey("character.id", ondelete="CASCADE")),
-    Column("item_id", ForeignKey("item.id")),
-)
-
 character_sub_areas_association = Table(
     "character_sub_areas_association",
     Base.metadata,
@@ -54,6 +47,18 @@ character_recipe_association = Table(
     Column("character_id", ForeignKey("character.id", ondelete="CASCADE")),
     Column("recipe_id", ForeignKey("recipe.id")),
 )
+
+
+class CharacterSellItemInfo(Base):
+    character_id: Mapped[int] = mapped_column(
+        ForeignKey("character.id", ondelete="CASCADE"), primary_key=True
+    )
+    item_id: Mapped[int] = mapped_column(ForeignKey("item.id"), primary_key=True)
+    item: Mapped["Item"] = relationship()
+    sale_hotel_quantity: Mapped[SaleHotelQuantity] = mapped_column(
+        ARRAY(Enum(SaleHotelQuantity)),
+        nullable=False,
+    )
 
 
 class CharacterJobInfo(Base):
@@ -84,9 +89,7 @@ class Character(Base):
     recipes: Mapped[List["Recipe"]] = relationship(
         secondary=character_recipe_association
     )
-    sell_items: Mapped[List["Item"]] = relationship(
-        secondary=character_sell_items_association
-    )
+    character_sell_items_info: Mapped[List["CharacterSellItemInfo"]] = relationship()
 
     po_bonus: Mapped[int] = mapped_column(nullable=False, default=0)
     elem: Mapped[ElemEnum] = mapped_column(default=ElemEnum.ELEMENT_WATER)
