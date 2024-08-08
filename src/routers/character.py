@@ -85,6 +85,18 @@ def update_recipes(
     session.commit()
 
 
+@router.put("/{character_id}/sell_items")
+def update_sell_items(
+    character_id: str,
+    item_ids: list[int],
+    session: Session = Depends(session_local),
+):
+    character = session.get_one(Character, character_id)
+    items = session.query(Item).filter(Item.id.in_(item_ids)).all()
+    character.sell_items = items
+    session.commit()
+
+
 @router.put("/{character_id}/spells/", response_model=list[SpellSchema])
 def update_spells(
     character_id: str,

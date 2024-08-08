@@ -34,6 +34,13 @@ character_items_association = Table(
     Column("item_id", ForeignKey("item.id")),
 )
 
+character_sell_items_association = Table(
+    "character_sell_items_association",
+    Base.metadata,
+    Column("character_id", ForeignKey("character.id", ondelete="CASCADE")),
+    Column("item_id", ForeignKey("item.id")),
+)
+
 character_sub_areas_association = Table(
     "character_sub_areas_association",
     Base.metadata,
@@ -77,6 +84,10 @@ class Character(Base):
     recipes: Mapped[List["Recipe"]] = relationship(
         secondary=character_recipe_association
     )
+    sell_items: Mapped[List["Item"]] = relationship(
+        secondary=character_sell_items_association
+    )
+
     po_bonus: Mapped[int] = mapped_column(nullable=False, default=0)
     elem: Mapped[ElemEnum] = mapped_column(default=ElemEnum.ELEMENT_WATER)
     server_id: Mapped[int] = mapped_column(ForeignKey("server.id"), nullable=False)
