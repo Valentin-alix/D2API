@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Response
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from D2Shared.shared.schemas.item import ItemSchema
 from src.database import session_local
@@ -29,6 +29,13 @@ def get_icon_img(
         return Response()
 
     return Response(content=img[0])
+
+
+@router.get("/", response_model=list[ItemSchema])
+def get_items(
+    session: Session = Depends(session_local),
+):
+    return session.query(Item).options(joinedload(Item.type_item)).all()
 
 
 @router.get("/default_sellable", response_model=list[ItemSchema])
