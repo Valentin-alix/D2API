@@ -5,9 +5,9 @@ from D2Shared.shared.schemas.character import (
     CharacterJobInfoSchema,
     CharacterSchema,
     UpdateCharacterSchema,
-    UpdateCharacterSellItemInfoSchema,
 )
 from D2Shared.shared.schemas.collectable import CollectableSchema
+from D2Shared.shared.schemas.item import SellItemInfo
 from D2Shared.shared.schemas.spell import SpellSchema, UpdateSpellSchema
 from D2Shared.shared.utils.debugger import timeit
 from src.database import session_local
@@ -86,23 +86,28 @@ def update_recipes(
     session.commit()
 
 
-@router.put("/{character_id}/sell_items")
+@router.put("/{character_id}/sell_items/")
 def update_sell_items(
     character_id: str,
-    items_info: list[UpdateCharacterSellItemInfoSchema],
+    items_info: list[SellItemInfo],
     session: Session = Depends(session_local),
 ):
     character = session.get_one(Character, character_id)
     character_sell_items_info: list[CharacterSellItemInfo] = []
     for item_info in items_info:
-        character_sell_items_info.append(
-            CharacterSellItemInfo(
-                character_id=item_info.character_id,
-                item_id=item_info.item_id,
-                sale_hotel_quantity=item_info.sale_hotel_quantity,
-            )
+        sell_item_info, is_created = get_or_create(
+            session,
+            CharacterSellItemInfo,
+            commit=True,
+            character_id=character_id,
+            item_id=item_info.item_id,
+            defaults={"sale_hotel_quantities": item_info.sale_hotel_quantities},
         )
-    character.character_sell_items_info = character_sell_items_info
+        if not is_created:
+            sell_item_info.sale_hotel_quantities = item_info.sale_hotel_quantities
+        character_sell_items_info.append(sell_item_info)
+
+    character.sell_items_infos = character_sell_items_info
     session.commit()
 
 

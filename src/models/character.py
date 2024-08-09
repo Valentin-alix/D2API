@@ -50,12 +50,12 @@ character_recipe_association = Table(
 
 
 class CharacterSellItemInfo(Base):
-    character_id: Mapped[int] = mapped_column(
+    character_id: Mapped[str] = mapped_column(
         ForeignKey("character.id", ondelete="CASCADE"), primary_key=True
     )
     item_id: Mapped[int] = mapped_column(ForeignKey("item.id"), primary_key=True)
     item: Mapped["Item"] = relationship()
-    sale_hotel_quantity: Mapped[SaleHotelQuantity] = mapped_column(
+    sale_hotel_quantities: Mapped[list[SaleHotelQuantity]] = mapped_column(
         ARRAY(Enum(SaleHotelQuantity)),
         nullable=False,
     )
@@ -79,7 +79,7 @@ class CharacterJobInfo(Base):
 class Character(Base):
     id: Mapped[str] = mapped_column(primary_key=True, autoincrement=False)
     lvl: Mapped[int] = mapped_column(nullable=False, default=1)
-    character_job_info: Mapped[List["CharacterJobInfo"]] = relationship()
+    jobs_infos: Mapped[List["CharacterJobInfo"]] = relationship()
     waypoints: Mapped[List["Waypoint"]] = relationship(
         secondary=character_waypoint_association
     )
@@ -89,7 +89,9 @@ class Character(Base):
     recipes: Mapped[List["Recipe"]] = relationship(
         secondary=character_recipe_association
     )
-    character_sell_items_info: Mapped[List["CharacterSellItemInfo"]] = relationship()
+    sell_items_infos: Mapped[List["CharacterSellItemInfo"]] = relationship(
+        cascade="all, delete-orphan"
+    )
 
     po_bonus: Mapped[int] = mapped_column(nullable=False, default=0)
     elem: Mapped[ElemEnum] = mapped_column(default=ElemEnum.ELEMENT_WATER)
@@ -116,7 +118,7 @@ class Character(Base):
     def max_pods(self):
         BASE_PODS = 1000
 
-        sum_job_lvls = sum((elem.lvl for elem in self.character_job_info))
+        sum_job_lvls = sum((elem.lvl for elem in self.jobs_infos))
         bonus_pods = 0
         pod_by_lvl = 12
         for _ in range(200, sum_job_lvls, 200):
@@ -130,6 +132,6 @@ class Character(Base):
     def harvest_jobs_infos(self) -> list[CharacterJobInfo]:
         return [
             job_info
-            for job_info in self.character_job_info
+            for job_info in self.jobs_infos
             if job_info.job.name in HARVEST_JOBS_NAME
         ]
