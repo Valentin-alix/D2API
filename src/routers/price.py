@@ -29,7 +29,7 @@ def update_or_create_price(
     return price
 
 
-@router.post("/", response_model=list[PriceSchema])
+@router.get("/", response_model=list[PriceSchema])
 def get_price_items(
     server_id: int,
     item_ids: list[int],
