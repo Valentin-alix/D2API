@@ -27,3 +27,17 @@ def update_or_create_price(
     price.average = price_average
     session.commit()
     return price
+
+
+@router.post("/", response_model=list[PriceSchema])
+def get_price_items(
+    server_id: int,
+    item_ids: list[int],
+    session: Session = Depends(session_local),
+):
+    prices = (
+        session.query(Price)
+        .filter(Price.server_id == server_id, Price.item_id.in_(item_ids))
+        .all()
+    )
+    return prices
