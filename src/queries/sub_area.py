@@ -2,7 +2,7 @@ import math
 import random
 
 from cachetools import cached
-from sqlalchemy import case, func
+from sqlalchemy import Float, case, cast, func
 from sqlalchemy.orm import Session, aliased, joinedload
 
 from D2Shared.shared.enums import AreaEnum
@@ -178,7 +178,10 @@ def get_weights_harvest_map(
             Map,
             func.sum(
                 (
-                    Price.average * CollectableMapInfo.count * func.pow(Item.level) / 20
+                    Price.average
+                    * CollectableMapInfo.count
+                    * func.power(cast(Item.level, Float), 2)
+                    / 20
                     + 1
                 )
                 * weight_by_job_case
