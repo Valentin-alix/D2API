@@ -26,7 +26,6 @@ from scripts.populate.dofus.populate_jobs import init_job
 from scripts.populate.dofus.populate_maps import (
     init_map,
 )
-from scripts.populate.dofus.populate_maps_directions import init_map_directions
 from scripts.populate.dofus.populate_prices_servers import init_prices_and_servers
 from scripts.populate.dofus.populate_recipes import (
     init_recipes,
@@ -59,7 +58,6 @@ async def init_bdd():
         init_world(session, d2i_texts)
         init_map(session)
         init_waypoint(session)
-        init_map_directions(session)
         init_prices_and_servers(session)
         await init_collectables_map_infos(session)
 

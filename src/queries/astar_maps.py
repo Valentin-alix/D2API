@@ -1,11 +1,9 @@
 from sqlalchemy.orm import Session, joinedload
 
-from D2Shared.shared.directions import get_inverted_direction
-from D2Shared.shared.enums import FromDirection
+from D2Shared.shared.enums import ToDirection
 from D2Shared.shared.utils.algos.astar import Astar
 from src.entities.map_with_action import MapWithAction
 from src.models.map import Map
-from src.models.map_direction import MapDirection
 from src.models.waypoint import Waypoint
 from src.queries.zaapi import get_zaapis_by_zone
 
@@ -35,7 +33,7 @@ def get_neighbors_map_change(
     if use_transport:
         if (
             map_with_action.map.world_id not in checked_world_id_waypoints
-            and map_with_action.map.allow_teleport_from
+            and map_with_action.map.can_havre_sac
         ):
             waypoints = (
                 session.query(Waypoint)
@@ -51,7 +49,6 @@ def get_neighbors_map_change(
                     MapWithAction(
                         map_id=waypoint.map_id,
                         map=waypoint.map,
-                        current_direction=FromDirection.WAYPOINT,
                         from_action=waypoint,
                     )
                 )
@@ -65,24 +62,40 @@ def get_neighbors_map_change(
                     MapWithAction(
                         map_id=zaapi_map.id,
                         map=zaapi_map,
-                        current_direction=FromDirection.ZAAPI,
                         from_action=zaapi,
                     )
                 )
 
-    session.refresh(map_with_action.map)
-    possible_map_directions = [
-        map_direction
-        for map_direction in map_with_action.map.map_directions
-        if map_direction.from_direction == map_with_action.current_direction
-    ]
-    for map_direction in possible_map_directions:
+    if map_with_action.map.left_map and map_with_action.map.left_map_id:
         neighbors_maps_with_action.append(
             MapWithAction(
-                map_id=map_direction.to_map_id,
-                map=map_direction.to_map,
-                current_direction=get_inverted_direction(map_direction.to_direction),
-                from_action=map_direction,
+                map_id=map_with_action.map.left_map_id,
+                map=map_with_action.map.left_map,
+                from_action=ToDirection.LEFT,
+            )
+        )
+    if map_with_action.map.right_map and map_with_action.map.right_map_id:
+        neighbors_maps_with_action.append(
+            MapWithAction(
+                map_id=map_with_action.map.right_map_id,
+                map=map_with_action.map.right_map,
+                from_action=ToDirection.RIGHT,
+            )
+        )
+    if map_with_action.map.top_map and map_with_action.map.top_map_id:
+        neighbors_maps_with_action.append(
+            MapWithAction(
+                map_id=map_with_action.map.top_map_id,
+                map=map_with_action.map.top_map,
+                from_action=ToDirection.TOP,
+            )
+        )
+    if map_with_action.map.bot_map and map_with_action.map.bot_map_id:
+        neighbors_maps_with_action.append(
+            MapWithAction(
+                map_id=map_with_action.map.bot_map_id,
+                map=map_with_action.map.bot_map,
+                from_action=ToDirection.BOT,
             )
         )
 
@@ -105,20 +118,10 @@ class AstarMap(Astar):
     def find_path(
         self,
         start_map: Map,
-        current_direction: FromDirection,
         end_maps: list[Map],
     ) -> list[MapWithAction] | None:
-        start = MapWithAction(
-            map_id=start_map.id, map=start_map, current_direction=current_direction
-        )
-        ends = set(
-            (
-                MapWithAction(
-                    map_id=map.id, map=map, current_direction=current_direction
-                )
-                for map in end_maps
-            )
-        )
+        start = MapWithAction(map_id=start_map.id, map=start_map)
+        ends = set((MapWithAction(map_id=map.id, map=map) for map in end_maps))
         return super().find_path(start, ends)
 
     def is_goal_reached(self, current: MapWithAction, ends: set[MapWithAction]) -> bool:
@@ -126,8 +129,7 @@ class AstarMap(Astar):
 
     def get_dist(self, current: MapWithAction, ends: set[MapWithAction]) -> float:
         if all(
-            end.from_action is not None
-            and not isinstance(end.from_action, MapDirection)
+            end.from_action is not None and not isinstance(end.from_action, ToDirection)
             for end in ends
         ):
             # it is taking zaap or zaapi

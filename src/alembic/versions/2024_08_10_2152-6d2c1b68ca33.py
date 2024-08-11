@@ -1,18 +1,18 @@
 """empty message
 
-Revision ID: 920ca719caf0
+Revision ID: 6d2c1b68ca33
 Revises: 
-Create Date: 2024-06-23 17:00:36.975108
+Create Date: 2024-08-10 21:52:37.232317
 
 """
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-
+from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '920ca719caf0'
+revision: str = '6d2c1b68ca33'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,24 +25,6 @@ def upgrade() -> None:
     sa.Column('name', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
-    )
-    op.create_table('breed',
-    sa.Column('id', sa.Integer(), autoincrement=False, nullable=False),
-    sa.Column('name', sa.String(), nullable=False),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
-    )
-    op.create_table('characteristic_category',
-    sa.Column('id', sa.Integer(), autoincrement=False, nullable=False),
-    sa.Column('name', sa.String(), nullable=False),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
-    )
-    op.create_table('equipment',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('label', sa.String(), nullable=False),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('label')
     )
     op.create_table('icon',
     sa.Column('id', sa.Integer(), autoincrement=False, nullable=False),
@@ -64,6 +46,14 @@ def upgrade() -> None:
     sa.Column('water_resistance', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('range_wait',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('start', sa.Float(), nullable=False),
+    sa.Column('end', sa.Float(), nullable=False),
+    sa.CheckConstraint('"end" > start', name='check_end_greater_than_start'),
+    sa.CheckConstraint('start >= 0', name='positive start'),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('region',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('left', sa.Integer(), nullable=False),
@@ -83,7 +73,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('weight', sa.Float(), nullable=False),
-    sa.CheckConstraint('weight>=0', name='check positive weight'),
+    sa.CheckConstraint('weight>0', name='check positive weight'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
@@ -104,6 +94,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(), nullable=False),
     sa.Column('password', sa.String(), nullable=False),
+    sa.Column('is_admin', sa.Boolean(), nullable=False),
     sa.Column('sub_expire', sa.DateTime(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
@@ -118,24 +109,36 @@ def upgrade() -> None:
     sa.Column('id', sa.String(), autoincrement=False, nullable=False),
     sa.Column('lvl', sa.Integer(), nullable=False),
     sa.Column('po_bonus', sa.Integer(), nullable=False),
-    sa.Column('is_sub', sa.Boolean(), nullable=False),
-    sa.Column('time_spent', sa.Float(), nullable=False),
-    sa.Column('breed_id', sa.Integer(), nullable=False),
     sa.Column('elem', sa.Enum('ELEMENT_NEUTRAL', 'ELEMENT_EARTH', 'ELEMENT_FIRE', 'ELEMENT_WATER', 'ELEMENT_AIR', name='elemenum'), nullable=False),
     sa.Column('server_id', sa.Integer(), nullable=False),
     sa.CheckConstraint('lvl>=1 AND lvl<=200', name='check legit character lvl'),
     sa.CheckConstraint('po_bonus>=0', name='check positive po bonus'),
-    sa.CheckConstraint('time_spent>=0', name='check positive time_spent'),
-    sa.ForeignKeyConstraint(['breed_id'], ['breed.id'], ),
     sa.ForeignKeyConstraint(['server_id'], ['server.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_table('characteristic',
-    sa.Column('id', sa.Integer(), autoincrement=False, nullable=False),
-    sa.Column('name', sa.String(), nullable=True),
-    sa.Column('characteristic_category_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['characteristic_category_id'], ['characteristic_category.id'], ),
+    op.create_table('config_user',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('afk_time_at_start', sa.Time(), nullable=True),
+    sa.Column('time_between_sentence', sa.Time(), nullable=True),
+    sa.Column('time_fighter', sa.Time(), nullable=True),
+    sa.Column('time_harvester', sa.Time(), nullable=True),
+    sa.Column('randomizer_duration_activity', sa.Float(), nullable=False),
+    sa.Column('range_new_map_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.CheckConstraint('randomizer_duration_activity >= 0 and randomizer_duration_activity <= 1', name='coherent randomizer_duration_activity'),
+    sa.ForeignKeyConstraint(['range_new_map_id'], ['range_wait.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('equipment',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('label', sa.String(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('exo_stat_id', sa.Integer(), nullable=True),
+    sa.Column('count_lines_achieved', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['exo_stat_id'], ['stat.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('label', 'user_id', name='unique label for user')
     )
     op.create_table('item',
     sa.Column('id', sa.Integer(), autoincrement=False, nullable=False),
@@ -147,31 +150,6 @@ def upgrade() -> None:
     sa.Column('is_saleable', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['icon_id'], ['icon.id'], ),
     sa.ForeignKeyConstraint(['type_item_id'], ['type_item.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('line',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('value', sa.Integer(), nullable=False),
-    sa.Column('equipment_id', sa.Integer(), nullable=False),
-    sa.Column('stat_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['equipment_id'], ['equipment.id'], ),
-    sa.ForeignKeyConstraint(['stat_id'], ['stat.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('rune',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('quantity', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(), nullable=False),
-    sa.Column('stat_id', sa.Integer(), nullable=False),
-    sa.CheckConstraint('quantity>=0', name='check positive quantity'),
-    sa.ForeignKeyConstraint(['stat_id'], ['stat.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name', 'quantity', name='unique name with quantity')
-    )
-    op.create_table('spell_variant',
-    sa.Column('id', sa.Integer(), autoincrement=False, nullable=False),
-    sa.Column('breed_id', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['breed_id'], ['breed.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('sub_area',
@@ -193,10 +171,25 @@ def upgrade() -> None:
     sa.Column('character_id', sa.String(), nullable=False),
     sa.Column('job_id', sa.Integer(), nullable=False),
     sa.Column('lvl', sa.Integer(), nullable=False),
+    sa.Column('weight', sa.Float(), nullable=False),
     sa.CheckConstraint('lvl>=1 AND lvl<=200', name='check legit character job lvl'),
     sa.ForeignKeyConstraint(['character_id'], ['character.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['job_id'], ['job.id'], ),
     sa.PrimaryKeyConstraint('character_id', 'job_id')
+    )
+    op.create_table('character_sell_item_info',
+    sa.Column('character_id', sa.String(), nullable=False),
+    sa.Column('item_id', sa.Integer(), nullable=False),
+    sa.Column('sale_hotel_quantities', postgresql.ARRAY(sa.Enum('ONE', 'TEN', 'HUNDRED', name='salehotelquantity')), nullable=False),
+    sa.ForeignKeyConstraint(['character_id'], ['character.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['item_id'], ['item.id'], ),
+    sa.PrimaryKeyConstraint('character_id', 'item_id')
+    )
+    op.create_table('character_sub_areas_association',
+    sa.Column('character_id', sa.String(), nullable=True),
+    sa.Column('sub_area_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['character_id'], ['character.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['sub_area_id'], ['sub_area.id'], )
     )
     op.create_table('collectable',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -217,16 +210,16 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('monster_id', 'item_id', name='unique drop')
     )
-    op.create_table('effect',
-    sa.Column('id', sa.Integer(), autoincrement=False, nullable=False),
-    sa.Column('is_boost', sa.Boolean(), nullable=False),
-    sa.Column('characteristic_id', sa.Integer(), nullable=True),
-    sa.Column('description', sa.String(), nullable=True),
-    sa.Column('operator', sa.String(), nullable=True),
-    sa.Column('elem', sa.Enum('ELEMENT_NEUTRAL', 'ELEMENT_EARTH', 'ELEMENT_FIRE', 'ELEMENT_WATER', 'ELEMENT_AIR', name='elemenum'), nullable=True),
-    sa.Column('use_in_fight', sa.Boolean(), nullable=False),
-    sa.ForeignKeyConstraint(['characteristic_id'], ['characteristic.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    op.create_table('line',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('value', sa.Integer(), nullable=False),
+    sa.Column('equipment_id', sa.Integer(), nullable=False),
+    sa.Column('stat_id', sa.Integer(), nullable=False),
+    sa.Column('spent_quantity', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['equipment_id'], ['equipment.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['stat_id'], ['stat.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('stat_id', 'equipment_id', name='unique stat for equipment')
     )
     op.create_table('map',
     sa.Column('id', sa.Integer(), autoincrement=False, nullable=False),
@@ -234,10 +227,16 @@ def upgrade() -> None:
     sa.Column('y', sa.Integer(), nullable=False),
     sa.Column('world_id', sa.Integer(), nullable=False),
     sa.Column('sub_area_id', sa.Integer(), nullable=False),
-    sa.Column('allow_teleport_from', sa.Boolean(), nullable=False),
-    sa.Column('allow_monster_fight', sa.Boolean(), nullable=False),
-    sa.Column('has_priority_on_world_map', sa.Boolean(), nullable=False),
+    sa.Column('left_map_id', sa.Integer(), nullable=True),
+    sa.Column('right_map_id', sa.Integer(), nullable=True),
+    sa.Column('top_map_id', sa.Integer(), nullable=True),
+    sa.Column('bot_map_id', sa.Integer(), nullable=True),
+    sa.Column('can_havre_sac', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['bot_map_id'], ['map.id'], ),
+    sa.ForeignKeyConstraint(['left_map_id'], ['map.id'], ),
+    sa.ForeignKeyConstraint(['right_map_id'], ['map.id'], ),
     sa.ForeignKeyConstraint(['sub_area_id'], ['sub_area.id'], ),
+    sa.ForeignKeyConstraint(['top_map_id'], ['map.id'], ),
     sa.ForeignKeyConstraint(['world_id'], ['world.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -258,6 +257,15 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('item_id', 'server_id', name='unique price by server item')
     )
+    op.create_table('range_hour_play_time',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('start_time', sa.Time(), nullable=False),
+    sa.Column('end_time', sa.Time(), nullable=False),
+    sa.Column('config_user_id', sa.Integer(), nullable=False),
+    sa.CheckConstraint('end_time > start_time', name='check_end_time_greater_than_start_time'),
+    sa.ForeignKeyConstraint(['config_user_id'], ['config_user.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('recipe',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('result_item_id', sa.Integer(), nullable=False),
@@ -267,14 +275,46 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('result_item_id')
     )
-    op.create_table('spell',
-    sa.Column('id', sa.Integer(), autoincrement=False, nullable=False),
+    op.create_table('rune',
+    sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
-    sa.Column('spell_variant_id', sa.Integer(), nullable=False),
-    sa.Column('default_index', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['spell_variant_id'], ['spell_variant.id'], ),
+    sa.Column('stat_id', sa.Integer(), nullable=False),
+    sa.Column('item_id', sa.Integer(), nullable=False),
+    sa.Column('stat_quantity', sa.Integer(), nullable=False),
+    sa.CheckConstraint('stat_quantity>0', name='check positive quantity'),
+    sa.ForeignKeyConstraint(['item_id'], ['item.id'], ),
+    sa.ForeignKeyConstraint(['stat_id'], ['stat.id'], ),
     sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name', 'stat_quantity', name='unique name with quantity')
+    )
+    op.create_table('spell',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(), nullable=False),
+    sa.Column('character_id', sa.String(), nullable=False),
+    sa.Column('index', sa.Integer(), nullable=False),
+    sa.Column('elem', sa.Enum('ELEMENT_NEUTRAL', 'ELEMENT_EARTH', 'ELEMENT_FIRE', 'ELEMENT_WATER', 'ELEMENT_AIR', name='elemenum'), nullable=False),
+    sa.Column('is_disenchantment', sa.Boolean(), nullable=False),
+    sa.Column('boost_char', sa.Enum('PA', 'PM', 'PO', 'CHANCE', 'VITALITY', name='characteristicenum'), nullable=True),
+    sa.Column('is_healing', sa.Boolean(), nullable=False),
+    sa.Column('is_for_enemy', sa.Boolean(), nullable=False),
+    sa.Column('ap_cost', sa.Integer(), nullable=False),
+    sa.Column('max_cast', sa.Integer(), nullable=False),
+    sa.Column('min_range', sa.Integer(), nullable=False),
+    sa.Column('range', sa.Integer(), nullable=False),
+    sa.Column('duration_boost', sa.Integer(), nullable=False),
+    sa.Column('boostable_range', sa.Boolean(), nullable=False),
+    sa.Column('level', sa.Integer(), nullable=False),
+    sa.CheckConstraint('level>=1 AND level<=200', name='check legit spell lvl'),
+    sa.ForeignKeyConstraint(['character_id'], ['character.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('character_id', 'index', name='unique index per character'),
     sa.UniqueConstraint('name')
+    )
+    op.create_table('character_recipe_association',
+    sa.Column('character_id', sa.String(), nullable=True),
+    sa.Column('recipe_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['character_id'], ['character.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['recipe_id'], ['recipe.id'], )
     )
     op.create_table('collectable_map_info',
     sa.Column('collectable_id', sa.Integer(), nullable=False),
@@ -293,45 +333,6 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['recipe_id'], ['recipe.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('item_id', 'recipe_id', name='unique ingredient on recipe')
-    )
-    op.create_table('map_direction',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('from_map_id', sa.Integer(), nullable=False),
-    sa.Column('from_direction', sa.Enum('TOP_LEFT', 'TOP', 'TOP_RIGHT', 'BOT_LEFT', 'BOT', 'BOT_RIGHT', 'RIGHT_TOP', 'RIGHT', 'RIGHT_BOT', 'LEFT_TOP', 'LEFT', 'LEFT_BOT', 'WAYPOINT', 'ZAAPI', 'UNKNOWN', name='fromdirection'), nullable=False),
-    sa.Column('to_map_id', sa.Integer(), nullable=False),
-    sa.Column('to_direction', sa.Enum('TOP_LEFT', 'TOP', 'TOP_RIGHT', 'BOT_LEFT', 'BOT', 'BOT_RIGHT', 'RIGHT_TOP', 'RIGHT', 'RIGHT_BOT', 'LEFT_TOP', 'LEFT', 'LEFT_BOT', name='todirection'), nullable=False),
-    sa.Column('was_checked', sa.Boolean(), nullable=False),
-    sa.ForeignKeyConstraint(['from_map_id'], ['map.id'], ),
-    sa.ForeignKeyConstraint(['to_map_id'], ['map.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('from_map_id', 'from_direction', 'to_map_id', 'to_direction', name='unique direction')
-    )
-    op.create_table('spell_level',
-    sa.Column('id', sa.Integer(), autoincrement=False, nullable=False),
-    sa.Column('spell_id', sa.Integer(), nullable=False),
-    sa.Column('ap_cost', sa.Integer(), nullable=False),
-    sa.Column('max_cast', sa.Integer(), nullable=False),
-    sa.Column('min_range', sa.Integer(), nullable=False),
-    sa.Column('range', sa.Integer(), nullable=False),
-    sa.Column('can_cast_in_line', sa.Boolean(), nullable=False),
-    sa.Column('can_cast_in_diagonal', sa.Boolean(), nullable=False),
-    sa.Column('need_los', sa.Boolean(), nullable=False),
-    sa.Column('is_disenchantment', sa.Boolean(), nullable=False),
-    sa.Column('is_boost', sa.Boolean(), nullable=False),
-    sa.Column('is_healing', sa.Boolean(), nullable=False),
-    sa.Column('on_enemy', sa.Boolean(), nullable=False),
-    sa.Column('duration_boost', sa.Integer(), nullable=False),
-    sa.Column('need_free_cell', sa.Boolean(), nullable=False),
-    sa.Column('need_taken_cell', sa.Boolean(), nullable=False),
-    sa.Column('need_visible_entity', sa.Boolean(), nullable=False),
-    sa.Column('range_can_be_boosted', sa.Boolean(), nullable=False),
-    sa.Column('max_stack', sa.Integer(), nullable=False),
-    sa.Column('min_cast_interval', sa.Integer(), nullable=False),
-    sa.Column('initial_cooldown', sa.Integer(), nullable=False),
-    sa.Column('global_cooldown', sa.Integer(), nullable=False),
-    sa.Column('min_player_level', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['spell_id'], ['spell.id'], ),
-    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('template_found_map',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -356,16 +357,6 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['character_id'], ['character.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['waypoint_id'], ['waypoint.id'], )
     )
-    op.create_table('spell_level_effect',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('spell_level_id', sa.Integer(), nullable=False),
-    sa.Column('effect_id', sa.Integer(), nullable=False),
-    sa.Column('duration', sa.Integer(), nullable=False),
-    sa.Column('dispellable', sa.Enum('IS_DISPELLABLE', 'IS_DISPELLABLE_ONLY_BY_DEATH', 'IS_NOT_DISPELLABLE', name='dispellableenum'), nullable=False),
-    sa.ForeignKeyConstraint(['effect_id'], ['effect.id'], ),
-    sa.ForeignKeyConstraint(['spell_level_id'], ['spell_level.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('template_found_placement',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('template_found_map_id', sa.Integer(), nullable=False),
@@ -382,30 +373,30 @@ def upgrade() -> None:
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('template_found_placement')
-    op.drop_table('spell_level_effect')
     op.drop_table('character_waypoint_association')
     op.drop_table('waypoint')
     op.drop_table('template_found_map')
-    op.drop_table('spell_level')
-    op.drop_table('map_direction')
     op.drop_table('ingredient')
     op.drop_table('collectable_map_info')
+    op.drop_table('character_recipe_association')
     op.drop_table('spell')
+    op.drop_table('rune')
     op.drop_table('recipe')
+    op.drop_table('range_hour_play_time')
     op.drop_table('price')
     op.drop_table('monster_sub_area_association')
     op.drop_table('map')
-    op.drop_table('effect')
+    op.drop_table('line')
     op.drop_table('drop')
     op.drop_table('collectable')
+    op.drop_table('character_sub_areas_association')
+    op.drop_table('character_sell_item_info')
     op.drop_table('character_job_info')
     op.drop_table('character_items_association')
     op.drop_table('sub_area')
-    op.drop_table('spell_variant')
-    op.drop_table('rune')
-    op.drop_table('line')
     op.drop_table('item')
-    op.drop_table('characteristic')
+    op.drop_table('equipment')
+    op.drop_table('config_user')
     op.drop_table('character')
     op.drop_table('world')
     op.drop_table('user')
@@ -414,11 +405,9 @@ def downgrade() -> None:
     op.drop_table('stat')
     op.drop_table('server')
     op.drop_table('region')
+    op.drop_table('range_wait')
     op.drop_table('monster')
     op.drop_table('job')
     op.drop_table('icon')
-    op.drop_table('equipment')
-    op.drop_table('characteristic_category')
-    op.drop_table('breed')
     op.drop_table('area')
     # ### end Alembic commands ###

@@ -2,55 +2,50 @@ from operator import and_, or_
 from typing import Literal, overload
 
 from sqlalchemy import func, literal
-from sqlalchemy.orm import Session, aliased, joinedload, selectinload
+from sqlalchemy.orm import Session, aliased
 from sqlalchemy.sql.base import ExecutableOption
 
-from D2Shared.shared.enums import FromDirection
 from src.models.map import Map
-from src.models.map_direction import MapDirection
 from src.models.sub_area import SubArea
 from src.models.world import World
 
 
-def get_limit_maps_sub_area_id(session: Session, sub_area_ids: list[int]) -> list[Map]:
-    ToMapAlias = aliased(Map)
+def get_limit_or_waypoint_maps_sub_area_id(
+    session: Session, sub_area_ids: list[int]
+) -> list[Map]:
+    LeftMapAlias = aliased(Map)
+    RightMapAlias = aliased(Map)
+    TopMapAlias = aliased(Map)
+    BotMapAlias = aliased(Map)
+
     limit_maps_query = (
         session.query(Map)
         .join(SubArea, SubArea.id == Map.sub_area_id)
-        .filter(SubArea.id.in_(sub_area_ids))
-        .join(MapDirection, MapDirection.from_map_id == Map.id)
-        .join(ToMapAlias, ToMapAlias.id == MapDirection.to_map_id)
-    )
-
-    limit_maps_query = limit_maps_query.filter(
-        or_(
-            ToMapAlias.sub_area_id.not_in(sub_area_ids),
-            and_(Map.waypoint != None, Map.world_id != 2),  # noqa: E711
+        .join(LeftMapAlias, Map.left_map_id == LeftMapAlias.id)
+        .join(RightMapAlias, Map.right_map_id == RightMapAlias.id)
+        .join(TopMapAlias, Map.top_map_id == TopMapAlias.id)
+        .join(BotMapAlias, Map.bot_map_id == BotMapAlias.id)
+        .filter(
+            SubArea.id.in_(sub_area_ids),
+            or_(
+                *[
+                    and_(Map.waypoint != None, Map.world_id != 2),  # noqa: E711
+                    LeftMapAlias.sub_area_id.not_in(sub_area_ids),
+                    RightMapAlias.sub_area_id.not_in(sub_area_ids),
+                    TopMapAlias.sub_area_id.not_in(sub_area_ids),
+                    BotMapAlias.sub_area_id.not_in(sub_area_ids),
+                ]
+            ),
         )
     )
 
     return limit_maps_query.all()
 
 
-def get_neighbors(
-    session: Session, map_id: int, from_direction: FromDirection | None
-) -> list[MapDirection]:
-    if from_direction is not None:
-        extra_filters = (MapDirection.from_direction == from_direction,)
-    else:
-        extra_filters = ()
-    return (
-        session.query(MapDirection)
-        .filter(MapDirection.from_map_id == map_id, *extra_filters)
-        .options(joinedload(MapDirection.to_map))
-        .all()
-    )
-
-
 def get_near_map_allowing_havre(session: Session, map: Map) -> Map:
     near_map_allow_havre = (
         session.query(Map)
-        .filter(Map.allow_teleport_from)
+        .filter(Map.can_havre_sac)
         .order_by(Map.get_dist_map(map))
         .first()
     )
@@ -73,9 +68,6 @@ def get_related_neighbor_map(
         .order_by(
             (Map.id == from_map.id).asc(),
             (Map.sub_area_id == from_map.sub_area_id).desc(),
-            (
-                Map.has_priority_on_world_map == from_map.has_priority_on_world_map
-            ).desc(),
         )
     )
     if options is not None:
@@ -96,9 +88,7 @@ def get_map_from_hud(
 
     x, y = int(coordinates[0]), int(coordinates[1])
     if from_map is not None and world_id == from_map.world_id:
-        map = get_related_neighbor_map(
-            session, from_map, x, y, options=selectinload(Map.map_directions)
-        )
+        map = get_related_neighbor_map(session, from_map, x, y)
         if map is None:
             return None
         return map
@@ -108,7 +98,6 @@ def get_map_from_hud(
         x=x,
         y=y,
         world_id=world_id,
-        options=selectinload(Map.map_directions),
         force=True,
     )
 
@@ -145,11 +134,7 @@ def get_related_map(
     options: ExecutableOption | None = None,
     force: bool = False,
 ) -> Map | None:
-    query = (
-        session.query(Map)
-        .filter_by(x=x, y=y, world_id=world_id)
-        .order_by(Map.has_priority_on_world_map.desc())
-    )
+    query = session.query(Map).filter_by(x=x, y=y, world_id=world_id)
     if options is not None:
         query = query.options(options)
     map = query.first()
