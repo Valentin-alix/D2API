@@ -10,6 +10,7 @@ from D2Shared.shared.schemas.map import CoordinatesMapSchema, MapSchema
 from D2Shared.shared.schemas.map_with_action import MapWithActionSchema
 from src.database import session_local
 from src.models.map import Map
+from src.models.map_direction import MapDirection
 from src.queries.astar_maps import AstarMap
 from src.queries.map import (
     get_limit_or_waypoint_maps_sub_area_id,
@@ -106,23 +107,24 @@ def near_map_allowing_havre(
     return map
 
 
-@router.patch("/{map_id}/map_direction/")
+@router.patch("/map_direction/{map_direction_id}/")
 def update_map_direction(
-    map_id: int,
-    direction: ToDirection,
-    to_map_id: int | None,
+    map_direction_id: int,
+    to_map_id: int,
     session: Session = Depends(session_local),
 ):
-    map = session.get_one(Map, map_id)
-    match direction:
-        case ToDirection.TOP:
-            map.top_map_id = to_map_id
-        case ToDirection.BOT:
-            map.bot_map_id = to_map_id
-        case ToDirection.LEFT:
-            map.left_map_id = to_map_id
-        case ToDirection.RIGHT:
-            map.right_map_id = to_map_id
+    map_dir = session.get_one(MapDirection, map_direction_id)
+    map_dir.to_map_id = to_map_id
+    session.commit()
+
+
+@router.delete("/map_direction/{map_direction_id}/")
+def delete_map_direction(
+    map_direction_id: int,
+    session: Session = Depends(session_local),
+):
+    map_dir = session.get_one(MapDirection, map_direction_id)
+    session.delete(map_dir)
     session.commit()
 
 
@@ -135,12 +137,7 @@ def get_map_directions(
     session: Session = Depends(session_local),
 ):
     map = session.get_one(Map, map_id)
-    return {
-        ToDirection.LEFT: map.left_map,
-        ToDirection.RIGHT: map.right_map,
-        ToDirection.TOP: map.top_map,
-        ToDirection.BOT: map.bot_map,
-    }
+    return map.map_directions
 
 
 @router.get("/limit_maps_sub_area/", response_model=list[MapSchema])

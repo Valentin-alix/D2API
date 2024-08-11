@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session, aliased
 from sqlalchemy.sql.base import ExecutableOption
 
 from src.models.map import Map
+from src.models.map_direction import MapDirection
 from src.models.sub_area import SubArea
 from src.models.world import World
 
@@ -13,27 +14,19 @@ from src.models.world import World
 def get_limit_or_waypoint_maps_sub_area_id(
     session: Session, sub_area_ids: list[int]
 ) -> list[Map]:
-    LeftMapAlias = aliased(Map)
-    RightMapAlias = aliased(Map)
-    TopMapAlias = aliased(Map)
-    BotMapAlias = aliased(Map)
+    ToMapAlias = aliased(Map)
 
     limit_maps_query = (
         session.query(Map)
         .join(SubArea, SubArea.id == Map.sub_area_id)
-        .join(LeftMapAlias, Map.left_map_id == LeftMapAlias.id)
-        .join(RightMapAlias, Map.right_map_id == RightMapAlias.id)
-        .join(TopMapAlias, Map.top_map_id == TopMapAlias.id)
-        .join(BotMapAlias, Map.bot_map_id == BotMapAlias.id)
+        .join(MapDirection, MapDirection.from_map_id == Map.id)
+        .join(ToMapAlias, ToMapAlias.id == MapDirection.to_map_id)
         .filter(
             SubArea.id.in_(sub_area_ids),
             or_(
                 *[
                     and_(Map.waypoint != None, Map.world_id != 2),  # noqa: E711
-                    LeftMapAlias.sub_area_id.not_in(sub_area_ids),
-                    RightMapAlias.sub_area_id.not_in(sub_area_ids),
-                    TopMapAlias.sub_area_id.not_in(sub_area_ids),
-                    BotMapAlias.sub_area_id.not_in(sub_area_ids),
+                    ToMapAlias.sub_area_id.not_in(sub_area_ids),
                 ]
             ),
         )

@@ -18,6 +18,7 @@ from .sub_area import *
 from .waypoint import *
 from .world import *
 from .map import *
+from .map_direction import *
 
 from .type_item import *
 from .item import *

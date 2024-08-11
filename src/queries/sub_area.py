@@ -2,7 +2,7 @@ import math
 import random
 
 from cachetools import cached
-from sqlalchemy import case, func, or_
+from sqlalchemy import case, func
 from sqlalchemy.orm import Session, aliased, joinedload
 
 from D2Shared.shared.enums import AreaEnum
@@ -13,6 +13,7 @@ from src.models.drop import Drop
 from src.models.item import Item
 from src.models.job import Job
 from src.models.map import Map
+from src.models.map_direction import MapDirection
 from src.models.monster import Monster
 from src.models.price import Price
 from src.models.sub_area import SubArea
@@ -266,28 +267,15 @@ def get_average_sub_area_weight(
 def get_neighbor_sub_area(
     session: Session, sub_area_id: int, valid_sub_areas_ids: list[int]
 ) -> list["SubArea"]:
-    TopMapAlias = aliased(Map)
-    BotMapAlias = aliased(Map)
-    LeftMapAlias = aliased(Map)
-    RightMapAlias = aliased(Map)
+    ToMapAlias = aliased(Map)
 
     return (
         session.query(SubArea)
         .join(Map, Map.sub_area_id == SubArea.id)
-        .join(TopMapAlias, TopMapAlias.id == Map.top_map_id)
-        .join(BotMapAlias, BotMapAlias.id == Map.bot_map_id)
-        .join(LeftMapAlias, LeftMapAlias.id == Map.left_map_id)
-        .join(RightMapAlias, RightMapAlias.id == Map.right_map_id)
+        .join(MapDirection, MapDirection.from_map_id == Map.id)
+        .join(ToMapAlias, MapDirection.to_map_id == ToMapAlias.id)
         .filter(
-            SubArea.id.in_(valid_sub_areas_ids),
-            or_(
-                *[
-                    TopMapAlias.sub_area_id == sub_area_id,
-                    BotMapAlias.sub_area_id == sub_area_id,
-                    LeftMapAlias.sub_area_id == sub_area_id,
-                    RightMapAlias.sub_area_id == sub_area_id,
-                ]
-            ),
+            SubArea.id.in_(valid_sub_areas_ids), ToMapAlias.sub_area_id == sub_area_id
         )
         .all()
     )

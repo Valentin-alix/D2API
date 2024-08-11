@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 6d2c1b68ca33
+Revision ID: d4eca37e733a
 Revises: 
-Create Date: 2024-08-10 21:52:37.232317
+Create Date: 2024-08-11 18:50:40.820705
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '6d2c1b68ca33'
+revision: str = 'd4eca37e733a'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -227,16 +227,8 @@ def upgrade() -> None:
     sa.Column('y', sa.Integer(), nullable=False),
     sa.Column('world_id', sa.Integer(), nullable=False),
     sa.Column('sub_area_id', sa.Integer(), nullable=False),
-    sa.Column('left_map_id', sa.Integer(), nullable=True),
-    sa.Column('right_map_id', sa.Integer(), nullable=True),
-    sa.Column('top_map_id', sa.Integer(), nullable=True),
-    sa.Column('bot_map_id', sa.Integer(), nullable=True),
     sa.Column('can_havre_sac', sa.Boolean(), nullable=False),
-    sa.ForeignKeyConstraint(['bot_map_id'], ['map.id'], ),
-    sa.ForeignKeyConstraint(['left_map_id'], ['map.id'], ),
-    sa.ForeignKeyConstraint(['right_map_id'], ['map.id'], ),
     sa.ForeignKeyConstraint(['sub_area_id'], ['sub_area.id'], ),
-    sa.ForeignKeyConstraint(['top_map_id'], ['map.id'], ),
     sa.ForeignKeyConstraint(['world_id'], ['world.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -334,6 +326,17 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('item_id', 'recipe_id', name='unique ingredient on recipe')
     )
+    op.create_table('map_direction',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('from_map_id', sa.Integer(), nullable=False),
+    sa.Column('to_map_id', sa.Integer(), nullable=False),
+    sa.Column('was_checked', sa.Boolean(), nullable=False),
+    sa.Column('direction', sa.Enum('TOP', 'BOT', 'RIGHT', 'LEFT', name='todirection'), nullable=False),
+    sa.ForeignKeyConstraint(['from_map_id'], ['map.id'], ),
+    sa.ForeignKeyConstraint(['to_map_id'], ['map.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('from_map_id', 'direction', name='unique direction with map')
+    )
     op.create_table('template_found_map',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('map_id', sa.Integer(), nullable=True),
@@ -376,6 +379,7 @@ def downgrade() -> None:
     op.drop_table('character_waypoint_association')
     op.drop_table('waypoint')
     op.drop_table('template_found_map')
+    op.drop_table('map_direction')
     op.drop_table('ingredient')
     op.drop_table('collectable_map_info')
     op.drop_table('character_recipe_association')

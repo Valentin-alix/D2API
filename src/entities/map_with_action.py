@@ -2,13 +2,13 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict
 
-from D2Shared.shared.enums import ToDirection
 from D2Shared.shared.schemas.zaapi import ZaapiSchema
 from src.models.map import Map
+from src.models.map_direction import MapDirection
 from src.models.waypoint import Waypoint
 
 
-type ActionMapChange = ToDirection | ZaapiSchema | Waypoint
+type ActionMapChange = MapDirection | ZaapiSchema | Waypoint
 
 
 class MapWithAction(BaseModel):
@@ -22,7 +22,7 @@ class MapWithAction(BaseModel):
         return isinstance(value, MapWithAction) and self.map_id == value.map_id
 
     def __str__(self) -> str:
-        return f"{self.from_action} : {self.from_action}"
+        return f"{self.from_action} => {self.map}"
 
     def __repr__(self) -> str:
         return self.__str__()

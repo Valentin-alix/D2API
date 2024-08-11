@@ -7,6 +7,7 @@ from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models.base import Base
+from src.models.map_direction import MapDirection
 from src.models.sub_area import SubArea
 
 if TYPE_CHECKING:
@@ -26,24 +27,9 @@ class Map(Base):
     sub_area_id: Mapped[int] = mapped_column(ForeignKey("sub_area.id"), nullable=False)
     sub_area: Mapped["SubArea"] = relationship(back_populates="maps")
 
-    # neighbors
-    left_map_id: Mapped[int | None] = mapped_column(ForeignKey("map.id"), nullable=True)
-    left_map_was_checked: Mapped[bool] = mapped_column(nullable=False, default=False)
-    left_map: Mapped[Map | None] = relationship(foreign_keys=[left_map_id])
-
-    right_map_id: Mapped[int | None] = mapped_column(
-        ForeignKey("map.id"), nullable=True
+    map_directions: Mapped[List[MapDirection]] = relationship(
+        back_populates="from_map", foreign_keys="MapDirection.from_map_id"
     )
-    right_map_was_checked: Mapped[bool] = mapped_column(nullable=False, default=False)
-    right_map: Mapped[Map | None] = relationship(foreign_keys=[right_map_id])
-
-    top_map_id: Mapped[int | None] = mapped_column(ForeignKey("map.id"), nullable=True)
-    top_map_was_checked: Mapped[bool] = mapped_column(nullable=False, default=False)
-    top_map: Mapped[Map | None] = relationship(foreign_keys=[top_map_id])
-
-    bot_map_id: Mapped[int | None] = mapped_column(ForeignKey("map.id"), nullable=True)
-    bot_map_was_checked: Mapped[bool] = mapped_column(nullable=False, default=False)
-    bot_map: Mapped[Map | None] = relationship(foreign_keys=[bot_map_id])
 
     waypoint: Mapped["Waypoint | None"] = relationship(
         back_populates="map", uselist=False

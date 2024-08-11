@@ -66,43 +66,18 @@ def get_neighbors_map_change(
                     )
                 )
 
-    if map_with_action.map.left_map and map_with_action.map.left_map_id:
+    for map_direction in map_with_action.map.map_directions:
         neighbors_maps_with_action.append(
             MapWithAction(
-                map_id=map_with_action.map.left_map_id,
-                map=map_with_action.map.left_map,
-                from_action=ToDirection.LEFT,
+                map_id=map_direction.to_map_id,
+                map=map_direction.to_map,
+                from_action=map_direction,
             )
         )
-    if map_with_action.map.right_map and map_with_action.map.right_map_id:
-        neighbors_maps_with_action.append(
-            MapWithAction(
-                map_id=map_with_action.map.right_map_id,
-                map=map_with_action.map.right_map,
-                from_action=ToDirection.RIGHT,
-            )
-        )
-    if map_with_action.map.top_map and map_with_action.map.top_map_id:
-        neighbors_maps_with_action.append(
-            MapWithAction(
-                map_id=map_with_action.map.top_map_id,
-                map=map_with_action.map.top_map,
-                from_action=ToDirection.TOP,
-            )
-        )
-    if map_with_action.map.bot_map and map_with_action.map.bot_map_id:
-        neighbors_maps_with_action.append(
-            MapWithAction(
-                map_id=map_with_action.map.bot_map_id,
-                map=map_with_action.map.bot_map,
-                from_action=ToDirection.BOT,
-            )
-        )
-
     return neighbors_maps_with_action
 
 
-class AstarMap(Astar):
+class AstarMap(Astar[MapWithAction]):
     def __init__(
         self,
         use_transport: bool,
