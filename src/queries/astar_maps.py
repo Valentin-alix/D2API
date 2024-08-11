@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session, joinedload
 
-from D2Shared.shared.enums import ToDirection
 from D2Shared.shared.utils.algos.astar import Astar
 from src.entities.map_with_action import MapWithAction
 from src.models.map import Map
+from src.models.map_direction import MapDirection
 from src.models.waypoint import Waypoint
 from src.queries.zaapi import get_zaapis_by_zone
 
@@ -104,7 +104,8 @@ class AstarMap(Astar[MapWithAction]):
 
     def get_dist(self, current: MapWithAction, ends: set[MapWithAction]) -> float:
         if all(
-            end.from_action is not None and not isinstance(end.from_action, ToDirection)
+            end.from_action is not None
+            and not isinstance(end.from_action, MapDirection)
             for end in ends
         ):
             # it is taking zaap or zaapi

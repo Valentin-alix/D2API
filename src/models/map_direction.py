@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
-from D2Shared.shared.enums import ToDirection
+
+from D2Shared.shared.enums import Direction
 from src.models.base import Base
 
 if TYPE_CHECKING:
@@ -22,7 +23,7 @@ class MapDirection(Base):
     to_map: Mapped["Map"] = relationship(foreign_keys=[to_map_id])
 
     was_checked: Mapped[bool] = mapped_column(nullable=False, default=False)
-    direction: Mapped[ToDirection] = mapped_column(nullable=False)
+    direction: Mapped[Direction] = mapped_column(nullable=False)
 
     __table_args__ = (
         UniqueConstraint("from_map_id", "direction", name="unique direction with map"),

@@ -177,7 +177,10 @@ def get_weights_harvest_map(
         session.query(
             Map,
             func.sum(
-                (Price.average * CollectableMapInfo.count * (Item.level / 20 + 1))
+                (
+                    Price.average * CollectableMapInfo.count * func.pow(Item.level) / 20
+                    + 1
+                )
                 * weight_by_job_case
             ),
         )

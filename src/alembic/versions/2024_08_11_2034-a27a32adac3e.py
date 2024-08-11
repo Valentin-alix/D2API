@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: d4eca37e733a
+Revision ID: a27a32adac3e
 Revises: 
-Create Date: 2024-08-11 18:50:40.820705
+Create Date: 2024-08-11 20:34:39.576111
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = 'd4eca37e733a'
+revision: str = 'a27a32adac3e'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -331,7 +331,7 @@ def upgrade() -> None:
     sa.Column('from_map_id', sa.Integer(), nullable=False),
     sa.Column('to_map_id', sa.Integer(), nullable=False),
     sa.Column('was_checked', sa.Boolean(), nullable=False),
-    sa.Column('direction', sa.Enum('TOP', 'BOT', 'RIGHT', 'LEFT', name='todirection'), nullable=False),
+    sa.Column('direction', sa.Enum('TOP', 'BOT', 'RIGHT', 'LEFT', name='direction'), nullable=False),
     sa.ForeignKeyConstraint(['from_map_id'], ['map.id'], ),
     sa.ForeignKeyConstraint(['to_map_id'], ['map.id'], ),
     sa.PrimaryKeyConstraint('id'),

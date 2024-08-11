@@ -5,8 +5,9 @@ from fastapi.exceptions import ResponseValidationError
 from sqlalchemy.orm import Session
 
 
-from D2Shared.shared.enums import ToDirection
+from D2Shared.shared.directions import get_inverted_direction
 from D2Shared.shared.schemas.map import CoordinatesMapSchema, MapSchema
+from D2Shared.shared.schemas.map_direction import MapDirectionSchema
 from D2Shared.shared.schemas.map_with_action import MapWithActionSchema
 from src.database import session_local
 from src.models.map import Map
@@ -124,13 +125,19 @@ def delete_map_direction(
     session: Session = Depends(session_local),
 ):
     map_dir = session.get_one(MapDirection, map_direction_id)
+
+    session.query(MapDirection).filter(
+        MapDirection.direction == get_inverted_direction(map_dir.direction),
+        MapDirection.from_map_id == map_dir.to_map_id,
+        MapDirection.to_map_id == map_dir.from_map_id,
+    ).delete()
     session.delete(map_dir)
     session.commit()
 
 
 @router.get(
     "/{map_id}/map_direction/",
-    response_model=dict[ToDirection, MapSchema | None],
+    response_model=list[MapDirectionSchema],
 )
 def get_map_directions(
     map_id: int,

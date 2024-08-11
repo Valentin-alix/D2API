@@ -1,5 +1,5 @@
 from tqdm import tqdm
-from D2Shared.shared.enums import ToDirection
+from D2Shared.shared.enums import Direction
 from src.models.map import Map
 from src.models.map_direction import MapDirection
 from src.queries.map import get_related_neighbor_map
@@ -48,18 +48,18 @@ def get_default_directions(
 
     return [
         MapDirection(
-            from_map_id=map.id, to_map_id=get_left_map_id(), direction=ToDirection.LEFT
+            from_map_id=map.id, to_map_id=get_left_map_id(), direction=Direction.LEFT
         ),
         MapDirection(
             from_map_id=map.id,
             to_map_id=get_right_map_id(),
-            direction=ToDirection.RIGHT,
+            direction=Direction.RIGHT,
         ),
         MapDirection(
-            from_map_id=map.id, to_map_id=get_top_map_id(), direction=ToDirection.TOP
+            from_map_id=map.id, to_map_id=get_top_map_id(), direction=Direction.TOP
         ),
         MapDirection(
-            from_map_id=map.id, to_map_id=get_bot_map_id(), direction=ToDirection.BOT
+            from_map_id=map.id, to_map_id=get_bot_map_id(), direction=Direction.BOT
         ),
     ]
 
