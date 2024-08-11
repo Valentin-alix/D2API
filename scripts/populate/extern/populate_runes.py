@@ -1,7 +1,6 @@
 import json
 
 from sqlalchemy.orm import Session
-from tqdm import tqdm
 
 from D2Shared.shared.utils.text_similarity import get_similarity
 from scripts.populate.extern.consts import RUNES_JSON_PATH
@@ -18,7 +17,7 @@ def init_runes(session: Session):
         stats = json.load(file)
         stats_instance: list[Stat] = []
         runes_instance: list[Rune] = []
-        for stat in tqdm(stats):
+        for stat in stats:
             stat_instance = Stat(name=stat["name"], weight=stat["weight"])
             stats_instance.append(stat_instance)
             for rune in stat["runes"]:
