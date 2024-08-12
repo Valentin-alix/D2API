@@ -9,6 +9,7 @@ sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent))
 from scripts.populate.dofus.consts import (
     D2I_PATH,
 )
+
 from scripts.populate.dofus.populate_maps_directions import init_map_directions
 from scripts.populate.dofus.populate_areas import (
     init_areas,

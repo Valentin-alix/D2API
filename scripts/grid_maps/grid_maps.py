@@ -12,13 +12,13 @@ from PyQt5.QtWidgets import (
     QStyle,
     QWidget,
 )
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
+from D2Shared.shared.enums import Direction
 from src.database import SessionMaker
-from src.models.area import Area
 from src.models.map import Map
-from src.models.sub_area import SubArea
 
 
 class ArrowIcon(QLabel):
@@ -44,25 +44,16 @@ class CellMapWidget(QWidget):
         self.layout().setSpacing(0)
         self.layout().setContentsMargins(0, 0, 0, 0)
 
-        if map.left_map:
-            self.m_layout.addWidget(ArrowIcon(self.style().SP_ArrowLeft), 1, 0)
-        else:
-            self.m_layout.addWidget(QLabel(" "), 1, 0)
-
-        if map.right_map:
-            self.m_layout.addWidget(ArrowIcon(self.style().SP_ArrowRight), 1, 2)
-        else:
-            self.m_layout.addWidget(QLabel(" "), 1, 2)
-
-        if map.top_map:
-            self.m_layout.addWidget(ArrowIcon(self.style().SP_ArrowUp), 0, 1)
-        else:
-            self.m_layout.addWidget(QLabel(" "), 0, 1)
-
-        if map.bot_map:
-            self.m_layout.addWidget(ArrowIcon(self.style().SP_ArrowDown), 2, 1)
-        else:
-            self.m_layout.addWidget(QLabel(" "), 2, 1)
+        for map_direction in map.map_directions:
+            match map_direction.direction:
+                case Direction.LEFT:
+                    self.m_layout.addWidget(ArrowIcon(self.style().SP_ArrowLeft), 1, 0)
+                case Direction.RIGHT:
+                    self.m_layout.addWidget(ArrowIcon(self.style().SP_ArrowRight), 1, 2)
+                case Direction.TOP:
+                    self.m_layout.addWidget(ArrowIcon(self.style().SP_ArrowUp), 0, 1)
+                case Direction.BOT:
+                    self.m_layout.addWidget(ArrowIcon(self.style().SP_ArrowDown), 2, 1)
 
 
 class GridMap(QGraphicsView):
@@ -72,16 +63,11 @@ class GridMap(QGraphicsView):
         scene = QGraphicsScene()
         maps = (
             session.query(Map)
-            .join(SubArea, Map.sub_area_id == SubArea.id)
-            .join(Area, Area.id == SubArea.area_id)
-            .filter(Area.name == "Bonta", Map.x <= -24, Map.y > -62)
+            .filter(and_(Map.x >= 7, Map.x <= 13), and_(Map.y >= -29, Map.y <= -22))
             .distinct(Map.x, Map.y)
             .all()
         )
         for map in maps:
-            if map.y >= 0:
-                continue
-
             cell_widget = CellMapWidget(map)
             proxy = QGraphicsProxyWidget()
             proxy.setWidget(cell_widget)

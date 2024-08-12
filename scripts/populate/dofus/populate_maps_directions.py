@@ -12,13 +12,15 @@ from sqlalchemy.orm import Session
 def get_default_directions(
     session: Session,
     map: Map,
-    or_create: bool = True,
+    depth: int = 2,
 ) -> list[MapDirection]:
+    map_directions: list[MapDirection] = []
+
     def get_neighbor_map_id(x_increment: int, y_increment: int) -> int | None:
         neighbor = get_related_neighbor_map(
             session, map, map.x + x_increment, map.y + y_increment
         )
-        if not or_create or neighbor:
+        if depth <= 0 or neighbor:
             return neighbor.id if neighbor else None
 
         neighbor = Map(
@@ -30,8 +32,7 @@ def get_default_directions(
         )
         session.add(neighbor)
         session.flush()
-        get_default_directions(session, neighbor, False)
-
+        map_directions.extend(get_default_directions(session, neighbor, depth - 1))
         return neighbor.id
 
     def get_top_map_id() -> int | None:
@@ -46,28 +47,46 @@ def get_default_directions(
     def get_left_map_id():
         return get_neighbor_map_id(-1, 0)
 
-    return [
-        MapDirection(
-            from_map_id=map.id, to_map_id=get_left_map_id(), direction=Direction.LEFT
-        ),
-        MapDirection(
-            from_map_id=map.id,
-            to_map_id=get_right_map_id(),
-            direction=Direction.RIGHT,
-        ),
-        MapDirection(
-            from_map_id=map.id, to_map_id=get_top_map_id(), direction=Direction.TOP
-        ),
-        MapDirection(
-            from_map_id=map.id, to_map_id=get_bot_map_id(), direction=Direction.BOT
-        ),
-    ]
+    if left_to_map_id := get_left_map_id():
+        map_directions.append(
+            MapDirection(
+                from_map_id=map.id,
+                to_map_id=left_to_map_id,
+                direction=Direction.LEFT,
+            )
+        )
+    if right_to_map_id := get_right_map_id():
+        map_directions.append(
+            MapDirection(
+                from_map_id=map.id,
+                to_map_id=right_to_map_id,
+                direction=Direction.RIGHT,
+            )
+        )
+    if top_to_map_id := get_top_map_id():
+        map_directions.append(
+            MapDirection(
+                from_map_id=map.id,
+                to_map_id=top_to_map_id,
+                direction=Direction.TOP,
+            )
+        )
+    if bot_to_map_id := get_bot_map_id():
+        map_directions.append(
+            MapDirection(
+                from_map_id=map.id,
+                to_map_id=bot_to_map_id,
+                direction=Direction.BOT,
+            )
+        )
+    return map_directions
 
 
 def init_map_directions(session: Session):
     print("importing maps directions...")
     if session.query(MapDirection).first():
         return
+
     map_directions: list[MapDirection] = []
     for map in tqdm(session.query(Map).all()):
         map_directions.extend(get_default_directions(session, map))
