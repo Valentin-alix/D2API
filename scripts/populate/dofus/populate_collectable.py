@@ -16,7 +16,11 @@ def init_collectables(session: Session):
         skills = json.load(d2o_skill_file)
 
         for skill in skills:
-            if skill["gatheredRessourceItem"] == -1:
+            if skill["gatheredRessourceItem"] in [-1, 0]:
+                continue
+            if skill["gatheredRessourceItem"] in [
+                _elem.item_id for _elem in collectables
+            ]:
                 continue
             collectables.append(
                 Collectable(
@@ -24,3 +28,4 @@ def init_collectables(session: Session):
                 )
             )
     session.add_all(collectables)
+    session.commit()
