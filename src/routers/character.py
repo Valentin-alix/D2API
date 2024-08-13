@@ -128,6 +128,7 @@ def update_spells(
             commit=True,
             character_id=spell_data.character_id,
             index=spell_data.index,
+            defaults=spell_data.model_dump(exclude_unset=True),
         )[0]
         for key, value in spell_data.model_dump(exclude_unset=True).items():
             setattr(related_spell, key, value)
