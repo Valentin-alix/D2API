@@ -5,7 +5,8 @@ from D2Shared.shared.consts.jobs import HARVEST_JOBS_NAME
 from D2Shared.shared.enums import CategoryEnum
 from D2Shared.shared.schemas.recipe import RecipeSchema
 from src.database import session_local
-from src.models.character import Character, CharacterJobInfo
+from src.models.character import Character
+from src.models.character_job_info import CharacterJobInfo
 from src.models.job import Job
 from src.models.recipe import Recipe
 from src.queries.recipe import (

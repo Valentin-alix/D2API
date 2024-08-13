@@ -4,7 +4,7 @@ from sqlalchemy import Row, and_, case, func, or_
 from sqlalchemy.orm import Session, aliased, joinedload, selectinload
 
 from D2Shared.shared.enums import CategoryEnum
-from src.models.character import CharacterJobInfo
+from src.models.character_job_info import CharacterJobInfo
 from src.models.ingredient import Ingredient
 from src.models.item import Item
 from src.models.price import Price

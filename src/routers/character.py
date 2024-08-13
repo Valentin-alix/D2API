@@ -2,16 +2,17 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from D2Shared.shared.schemas.character import (
-    CharacterJobInfoSchema,
     CharacterSchema,
     UpdateCharacterSchema,
 )
+from D2Shared.shared.schemas.character_job_info import CharacterJobInfoSchema
 from D2Shared.shared.schemas.collectable import CollectableSchema
 from D2Shared.shared.schemas.item import SellItemInfo
 from D2Shared.shared.schemas.spell import SpellSchema, UpdateSpellSchema
-from D2Shared.shared.utils.debugger import timeit
 from src.database import session_local
-from src.models.character import Character, CharacterJobInfo, CharacterSellItemInfo
+from src.models.character import Character
+from src.models.character_job_info import CharacterJobInfo
+from src.models.character_sell_item_info import CharacterSellItemInfo
 from src.models.item import Item
 from src.models.recipe import Recipe
 from src.models.spell import Spell
@@ -186,7 +187,6 @@ def get_char_possible_collectable(
 
 
 @router.get("/{character_id}/or_create/", response_model=CharacterSchema)
-@timeit
 def get_or_create_character(
     character_id: str,
     session: Session = Depends(session_local),

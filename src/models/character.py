@@ -2,18 +2,19 @@ from __future__ import annotations
 
 from typing import List
 
-from sqlalchemy import CheckConstraint, Column, Enum, ForeignKey, Table
+from sqlalchemy import CheckConstraint, Column, ForeignKey, Table
 from sqlalchemy.orm import (
     Mapped,
     mapped_column,
     relationship,
 )
-from sqlalchemy.dialects.postgresql import ARRAY
 from D2Shared.shared.consts.jobs import HARVEST_JOBS_NAME
-from D2Shared.shared.enums import ElemEnum, SaleHotelQuantity
+from D2Shared.shared.enums import ElemEnum
 from src.models.base import Base
+from src.models.character_job_info import CharacterJobInfo
+from src.models.character_path_info import CharacterPathInfo
+from src.models.character_sell_item_info import CharacterSellItemInfo
 from src.models.item import Item
-from src.models.job import Job
 from src.models.recipe import Recipe
 from src.models.server import Server
 from src.models.spell import Spell
@@ -49,37 +50,11 @@ character_recipe_association = Table(
 )
 
 
-class CharacterSellItemInfo(Base):
-    character_id: Mapped[str] = mapped_column(
-        ForeignKey("character.id", ondelete="CASCADE"), primary_key=True
-    )
-    item_id: Mapped[int] = mapped_column(ForeignKey("item.id"), primary_key=True)
-    item: Mapped["Item"] = relationship()
-    sale_hotel_quantities: Mapped[list[SaleHotelQuantity]] = mapped_column(
-        ARRAY(Enum(SaleHotelQuantity)),
-        nullable=False,
-    )
-
-
-class CharacterJobInfo(Base):
-    character_id: Mapped[int] = mapped_column(
-        ForeignKey("character.id", ondelete="CASCADE"), primary_key=True
-    )
-    job_id: Mapped[int] = mapped_column(ForeignKey("job.id"), primary_key=True)
-    job: Mapped["Job"] = relationship()
-
-    lvl: Mapped[int] = mapped_column(nullable=False, default=1)
-    weight: Mapped[float] = mapped_column(nullable=False, default=1)
-
-    __table_args__ = (
-        CheckConstraint("lvl>=1 AND lvl<=200", name="check legit character job lvl"),
-    )
-
-
 class Character(Base):
     id: Mapped[str] = mapped_column(primary_key=True, autoincrement=False)
     lvl: Mapped[int] = mapped_column(nullable=False, default=1)
     jobs_infos: Mapped[List["CharacterJobInfo"]] = relationship()
+    paths_infos: Mapped[List[CharacterPathInfo]] = relationship()
     waypoints: Mapped[List["Waypoint"]] = relationship(
         secondary=character_waypoint_association
     )

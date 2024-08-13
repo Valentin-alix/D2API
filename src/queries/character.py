@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 
 from D2Shared.shared.consts.areas import FARMABLE_SUB_AREAS_BY_AREA
 from src.models.area import Area
-from src.models.character import Character, CharacterJobInfo
+from src.models.character import Character
+from src.models.character_job_info import CharacterJobInfo
 from src.models.collectable import Collectable
 from src.models.item import Item
 from src.models.job import Job

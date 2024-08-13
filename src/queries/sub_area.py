@@ -216,7 +216,7 @@ def get_valid_sub_areas_harvester(
     Returns:
         list[SubArea]: valid sub areas
     """
-    char_sub_area_ids = [elem.id for elem in character.sub_areas]
+    char_sub_area_ids = [_elem.id for _elem in character.sub_areas]
 
     query = (
         session.query(SubArea)
