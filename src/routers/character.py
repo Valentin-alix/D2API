@@ -120,6 +120,7 @@ def update_spells(
 ):
     character = session.get_one(Character, character_id)
     related_spells: list[Spell] = []
+    session.commit()  # Temp FIX
     for spell_data in spells_data:
         related_spell = get_or_create(
             session,
@@ -127,7 +128,6 @@ def update_spells(
             commit=True,
             character_id=spell_data.character_id,
             index=spell_data.index,
-            defaults=spell_data.model_dump(),
         )[0]
         for key, value in spell_data.model_dump(exclude_unset=True).items():
             setattr(related_spell, key, value)
