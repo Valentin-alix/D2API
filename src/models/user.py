@@ -42,13 +42,9 @@ class ConfigUser(Base):
     ranges_hour_playtime: Mapped[list[RangeHourPlayTime]] = relationship(
         back_populates="config_user", cascade="all, delete-orphan"
     )
-    afk_time_at_start = Column(Time, default=time())
     time_between_sentence = Column(Time, default=time(minute=30))
     time_fighter = Column(Time, default=time(hour=1))
     time_harvester = Column(Time, default=time(hour=4))
-    randomizer_duration_activity: Mapped[float] = mapped_column(
-        default=0.4, nullable=False
-    )
 
     range_new_map_id: Mapped[int] = mapped_column(
         ForeignKey("range_wait.id"), nullable=False
@@ -56,13 +52,6 @@ class ConfigUser(Base):
     range_new_map: Mapped[RangeWait] = relationship(foreign_keys=[range_new_map_id])
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
-
-    __table_args__ = (
-        CheckConstraint(
-            "randomizer_duration_activity >= 0 and randomizer_duration_activity <= 1",
-            name="coherent randomizer_duration_activity",
-        ),
-    )
 
 
 class User(Base):

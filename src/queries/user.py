@@ -6,9 +6,7 @@ from src.queries.utils import get_or_create
 
 
 DEFAULT_RANGES_HOURS_PLAYTIME: list[tuple[time, time]] = [
-    (time(hour=8), time(hour=12, minute=30)),
-    (time(hour=13), time(hour=20, minute=30)),
-    (time(hour=21), time(hour=23, minute=45)),
+    (time(hour=8), time(hour=23, minute=30))
 ]
 
 
@@ -18,7 +16,7 @@ def populate_config_user(session: Session, user_id: int):
         session,
         RangeWait,
         start=1,
-        end=6,
+        end=7,
         commit=False,
     )[0]
 
