@@ -16,7 +16,7 @@ def populate_config_user(session: Session, user_id: int):
         session,
         RangeWait,
         start=1,
-        end=7,
+        end=5,
         commit=False,
     )[0]
 
