@@ -25,3 +25,6 @@ from .item import *
 
 from .spell import *
 from .user import *
+
+from .character_path_info import *
+from .character_path_map import *

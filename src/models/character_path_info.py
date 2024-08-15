@@ -10,7 +10,7 @@ from typing import List
 
 
 class CharacterPathInfo(Base):
-    id: Mapped[str] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     character_id: Mapped[str] = mapped_column(
         ForeignKey("character.id", ondelete="CASCADE"), nullable=False
     )

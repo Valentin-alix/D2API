@@ -33,6 +33,8 @@ from src.routers import (
     type_item,
     user,
     world,
+    character_path_info,
+    character_path_map,
 )
 
 
@@ -88,6 +90,8 @@ app.include_router(config_user.router)
 app.include_router(stat.router)
 app.include_router(equipment.router)
 app.include_router(line.router)
+app.include_router(character_path_info.router)
+app.include_router(character_path_map.router)
 
 
 def is_db_ready(host: str, port: int) -> bool:
