@@ -255,7 +255,7 @@ def get_max_time_harvester(session: Session, sub_areas: list[SubArea]) -> int:
         .filter(Map.sub_area_id.in_([elem.id for elem in sub_areas]))
         .count()
     )
-    maps_time = min((300 + (count_maps * 120) / math.log2(count_maps)), 3600)
+    maps_time = min((300 + (count_maps * 120) / math.log2(count_maps)), 2400)
     return int(maps_time)
 
 
