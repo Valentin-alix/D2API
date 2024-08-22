@@ -105,6 +105,8 @@ def get_max_time_fighter(session: Session, sub_areas: list[SubArea]) -> int:
         .filter(Map.sub_area_id.in_([elem.id for elem in sub_areas]))
         .count()
     )
+    if count_maps == 0:
+        return 0
     maps_time = min((300 + (count_maps * 120) / math.log2(count_maps)), 3600)
     return int(maps_time)
 
@@ -255,6 +257,8 @@ def get_max_time_harvester(session: Session, sub_areas: list[SubArea]) -> int:
         .filter(Map.sub_area_id.in_([elem.id for elem in sub_areas]))
         .count()
     )
+    if count_maps == 0:
+        return 0
     maps_time = min((300 + (count_maps * 120) / math.log2(count_maps)), 2400)
     return int(maps_time)
 
@@ -264,10 +268,12 @@ def get_average_sub_area_weight(
 ) -> float:
     count_maps = len(sub_area.maps)
     if count_maps == 0:
-        return 0
-    if not sub_area.area.is_for_sub:
-        return 0
-    return sum(weights_by_map.get(map.id, 1) for map in sub_area.maps) / count_maps
+        return 0.01
+    return (
+        sum(weights_by_map.get(map.id, 1) for map in sub_area.maps)
+        / count_maps
+        * (0.1 if not sub_area.area.is_for_sub else 1)
+    )
 
 
 def get_neighbor_sub_area(
@@ -293,6 +299,9 @@ def get_random_grouped_sub_area(
     weights_by_map: dict[int, float],
     valid_sub_area_ids: list[SubArea],
 ) -> list[SubArea]:
+    if len(valid_sub_area_ids) == 0:
+        return []
+
     count_min_sub_area = min(
         (sub_area_ids_farming.count(sub_area.id) for sub_area in valid_sub_area_ids),
         default=0,
@@ -302,7 +311,7 @@ def get_random_grouped_sub_area(
         for sub_area in valid_sub_area_ids
         if sub_area_ids_farming.count(sub_area.id) == count_min_sub_area
     ]
-
+    print(less_farmed_sub_areas)
     sub_area = random.choices(
         less_farmed_sub_areas,
         [
