@@ -8,7 +8,7 @@ from D2Shared.shared.schemas.config_user import (
     UpdateConfigUserSchema,
 )
 from src.database import session_local
-from src.models.user import ConfigUser, RangeHourPlayTime, RangeWait
+from src.models.user import ConfigUser, RangeWait
 from src.queries.utils import get_or_create
 from src.security.auth import login
 
@@ -25,18 +25,6 @@ async def update_config_user(
     config_user_schema = UpdateConfigUserSchema(**json.loads(content))
     config_user_instance: ConfigUser = session.get_one(ConfigUser, config_user_id)
 
-    # playtimes
-    ranges_hour_playtime: list[RangeHourPlayTime] = []
-    for elem in config_user_schema.ranges_hour_playtime:
-        ranges_hour_playtime.append(
-            get_or_create(
-                session,
-                RangeHourPlayTime,
-                **elem.model_dump(),
-                config_user_id=config_user_id,
-            )[0]
-        )
-    config_user_instance.ranges_hour_playtime = ranges_hour_playtime
     # wait new map
     range_new_map_instance = get_or_create(
         session,

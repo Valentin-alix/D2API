@@ -8,24 +8,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.models.base import Base
 
 
-class RangeHourPlayTime(Base):
-    id: Mapped[int] = mapped_column(primary_key=True)
-    start_time = Column(Time, nullable=False)
-    end_time = Column(Time, nullable=False)
-    config_user_id: Mapped[int] = mapped_column(
-        ForeignKey("config_user.id", ondelete="CASCADE"), nullable=False
-    )
-    config_user: Mapped[ConfigUser] = relationship(
-        back_populates="ranges_hour_playtime"
-    )
-
-    __table_args__ = (
-        CheckConstraint(
-            "end_time > start_time", name="check_end_time_greater_than_start_time"
-        ),
-    )
-
-
 class RangeWait(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     start: Mapped[float] = mapped_column(nullable=False)
@@ -39,9 +21,6 @@ class RangeWait(Base):
 
 class ConfigUser(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
-    ranges_hour_playtime: Mapped[list[RangeHourPlayTime]] = relationship(
-        back_populates="config_user", cascade="all, delete-orphan"
-    )
     time_between_sentence = Column(Time, default=time(minute=30))
     time_fighter = Column(Time, default=time(hour=1))
     time_harvester = Column(Time, default=time(hour=4))
