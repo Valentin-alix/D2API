@@ -4,6 +4,8 @@ import sys
 
 from sqlalchemy.orm import Session
 
+from src.models.map_direction import MapDirection
+
 
 sys.path.append(os.path.join(Path(__file__).parent.parent.parent.parent))
 
@@ -16,6 +18,8 @@ from src.database import SessionMaker, run_migrations
 
 def populate_extern(session: Session):
     run_migrations()
+    session.query(MapDirection).delete()
+
     create_initial_users(session)
     populate_configs(session)
     init_runes(session)
