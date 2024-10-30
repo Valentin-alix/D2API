@@ -1,7 +1,3 @@
-### Poetry:
-
-`pip install poetry`
-
 ### .env:
 
 - DB_USERNAME=postgres
